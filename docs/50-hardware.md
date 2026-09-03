@@ -13,17 +13,23 @@ Script : `scripts/50-hardware.sh` (`./install.sh 50`). liquidctl >= 1.16.0 requi
 Le hub Uni n'accepte que des vitesses fixes par canal (pas de courbe embarquee), ce qui
 correspond au choix retenu : le boitier est tres ventile, les vitesses sont constantes.
 
-## Trouver le cablage des canaux
+## Cablage releve
 
-```bash
-sudo liquidctl list
-sudo liquidctl --match "Lian Li" set fan1 speed 100   # regarder quel groupe accelere
-sudo liquidctl --match "Lian Li" set fan1 speed 45
-sudo liquidctl status
-```
+| Peripherique | Canal | Ventilateurs | Valeur |
+|--------------|-------|--------------|--------|
+| Lian Li Uni SL V2 | fan1 | 3x SL140 facade, intake | 45 % |
+| Lian Li Uni SL V2 | fan2 | libre (0 rpm) | ignore |
+| Lian Li Uni SL V2 | fan3 | 3x SL120 bas sous le GPU, intake | 45 % |
+| Lian Li Uni SL V2 | fan4 | 1x SL140 arriere, exhaust | 50 % |
+| Kraken 2023 Elite | fan  | 3x SL120 radiateur, exhaust (header du Kraken) | 55 % |
+| Kraken 2023 Elite | pump | pompe | 70 % |
 
-Puis reporter dans `speeds.conf` (fan1..fan4) et `sudo systemctl restart liquidctl-apply`.
-Valeurs de depart : intake 45 %, radiateur 55 %, arriere 50 %, pompe 70 %.
+liquidctl affiche le Kraken comme « NZXT Kraken 2023 Elite (broken) » : c'est le libelle
+upstream du modele 0x300C (anciennement « experimental »). Lecture, pompe et canal `fan`
+fonctionnent ; l'ecran LCD est applique en best-effort (`KRAKEN_LCD=` pour ne pas y toucher).
+
+Pour re-tester un canal : `sudo liquidctl --match "Lian Li" set fan1 speed 100`, puis
+`sudo systemctl restart liquidctl-apply` pour revenir aux valeurs du fichier.
 
 ## Kraken Elite : ecran
 
@@ -44,5 +50,6 @@ sensors                        # k10temp (CPU), nct6687 (carte mere), nvme
 nvtop / nvidia-smi             # GPU
 ```
 
-Regle de securite : si la temperature du liquide depasse 45 °C en jeu, monter
-`LIANLI_FAN3` (radiateur) et `KRAKEN_PUMP`.
+Regle de securite : si la temperature du liquide depasse 45 °C en jeu, monter `KRAKEN_FAN`
+(radiateur) puis `KRAKEN_PUMP`. Releve au repos : liquide 39.9 °C avec pompe 35 % et
+ventilateurs radiateur 35 % (reglages NZXT CAM d'origine).

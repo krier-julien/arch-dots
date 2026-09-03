@@ -18,6 +18,7 @@ done
 # Kraken Elite : pompe + LCD
 if "${LC[@]}" list 2>/dev/null | grep -qi kraken; then
   "${LC[@]}" --match kraken set pump speed "${KRAKEN_PUMP:-70}"
+  [[ -n "${KRAKEN_FAN:-}" ]] && "${LC[@]}" --match kraken set fan speed "${KRAKEN_FAN}"
   case "${KRAKEN_LCD:-}" in
     liquid|duty) "${LC[@]}" --match kraken set lcd screen "${KRAKEN_LCD}" 2>/dev/null || true ;;
     "") ;;

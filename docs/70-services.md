@@ -28,6 +28,15 @@ Test manuel equivalent au service :
 nxapi nso presence --friend-nsaid 6a3756fd9acdec95 --discord-preconnect --show-play-time approximate
 ```
 
+## Migration depuis un service existant
+
+Si un `nxapi.service` maison existe deja dans `~/.config/systemd/user/`, le desactiver avant
+d'activer `nxapi-presence` (les deux se connecteraient a Discord) :
+
+```bash
+systemctl --user disable --now nxapi.service
+```
+
 ## Notes
 
 - Les jetons sont stockes par nxapi dans `~/.local/share/nxapi` ; `presence.env` est ignore
