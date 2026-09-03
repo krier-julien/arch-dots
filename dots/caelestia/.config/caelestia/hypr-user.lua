@@ -61,7 +61,7 @@ hl.window_rule({ match = { class = "steam_app_default" }, content = "game" })
 
 -- OBS et Plezy : opaques (apercu video fidele)
 hl.window_rule({ match = { class = "com.obsproject.Studio" }, opaque = true })
-hl.window_rule({ match = { class = "plezy|Plezy|dev.plezy.*" }, opaque = true })
+hl.window_rule({ match = { class = "com.edde746.plezy" }, opaque = true })
 
 ---------------------------------------------------------------------------
 -- Workspaces fixes + autostart (workspaces.lua) et automatisation jeu (gaming.lua)

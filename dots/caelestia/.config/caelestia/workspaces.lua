@@ -4,12 +4,13 @@ local M = {}
 
 -- Classes des applications (regex Hyprland). Ajuster si `hyprctl clients` montre autre chose.
 M.apps = {
-    browser = { class = "brave-browser|brave-origin|Brave-browser", ws = "1", cmd = "brave-origin" },
-    discord = { class = "vesktop|discord|equibop",                  ws = "2", cmd = "vesktop" },
-    steam   = { class = "steam",                                     ws = "3", cmd = "steam" },
-    obs     = { class = "com.obsproject.Studio",                     ws = "4", cmd = "obs" },
-    music   = { class = "pear-desktop|com.github.th_ch.youtube_music", ws = "5", cmd = "pear-desktop" },
-    plex    = { class = "plezy|Plezy|dev.plezy.*",                   ws = "6", cmd = "plezy" },
+    -- Classes relevees avec `hyprctl clients` sur la machine cible
+    browser = { class = "brave-origin",                                   ws = "1", cmd = "brave-origin" },
+    discord = { class = "discord|vesktop|equibop",                        ws = "2", cmd = "vesktop" },
+    steam   = { class = "steam",                                          ws = "3", cmd = "steam" },
+    obs     = { class = "com.obsproject.Studio",                          ws = "4", cmd = "obs" },
+    music   = { class = "com.github.th-ch.youtube-music|pear-desktop",    ws = "5", cmd = "pear-desktop" },
+    plex    = { class = "com.edde746.plezy",                              ws = "6", cmd = "plezy" },
 }
 -- Jeux : voir gaming.lua (workspace 7)
 M.games_ws    = "7"

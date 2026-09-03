@@ -47,18 +47,18 @@ hyprctl monitors | grep -E 'vrr|activelyTearing|directScanoutTo|tearingBlockedBy
 
 | WS | Application | Classe attendue | Autostart |
 |----|-------------|-----------------|-----------|
-| 1 | Brave Origin | `brave-browser` / `brave-origin` | oui |
-| 2 | Vesktop (Discord) | `vesktop` | oui |
+| 1 | Brave Origin | `brave-origin` | oui |
+| 2 | Vesktop (Discord) | `discord` / `vesktop` | oui |
 | 3 | Steam et toutes ses fenetres | `steam` | oui |
 | 4 | OBS Studio | `com.obsproject.Studio` | oui |
-| 5 | Pear Desktop (YouTube Music) | `pear-desktop` / `com.github.th_ch.youtube_music` | oui |
-| 6 | Plezy | `plezy` | oui |
+| 5 | Pear Desktop (YouTube Music) | `com.github.th-ch.youtube-music` | oui |
+| 6 | Plezy | `com.edde746.plezy` | oui |
 | 7 | Jeux (Steam, gamescope) | `steam_app_*`, `gamescope` | a la demande |
 
 Les fenetres des apps 1..6 sont envoyees sur leur workspace en mode `silent` (sans voler le
 focus), les jeux prennent le workspace 7 avec le focus. Les 7 workspaces sont `persistent`
-et lies a la TV. Si une classe differe sur ta machine (`hyprctl clients`), corriger
-`workspaces.lua` : c'est la seule source de verite pour les classes et l'autostart.
+et lies a la TV. Les classes ont ete relevees avec `hyprctl clients` ; `workspaces.lua` est la
+seule source de verite pour les classes et l'autostart.
 
 ## TV eteinte pendant le verrouillage
 
