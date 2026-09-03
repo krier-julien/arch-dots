@@ -15,7 +15,7 @@ stow_pkg uwsm
 vm_lua=false; [[ "$DOTS_VM" == 1 ]] && vm_lua=true
 cat > "$CFG/caelestia/local.lua" <<EOT
 -- genere par scripts/20-hyprland.sh depuis config.env
-return { monitor = "${DOTS_MONITOR}", vm = ${vm_lua} }
+return { monitor = "${DOTS_MONITOR}", vm = ${vm_lua}, bitdepth = ${DOTS_BITDEPTH} }
 EOT
 if [[ "$DOTS_VM" == 1 ]]; then
   cat > "$CFG/uwsm/env-local" <<'EOT'

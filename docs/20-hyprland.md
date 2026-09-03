@@ -33,12 +33,17 @@ par uwsm a toutes les apps, y compris celles lancees par le shell.
 | `render.direct_scanout` | 2 | Scanout direct pour les fenetres avec content type `game` (regle ajoutee pour `steam_app_*`, gamescope) |
 | `cursor.min_refresh_rate` | 48 | Plage VRR de la G3 |
 | `xwayland.force_zero_scaling` + `GDK_SCALE=2` | | Xwayland net, GTK X11 a l'echelle ; Steam via `STEAM_FORCE_DESKTOPUI_SCALING=2` |
-| `bitdepth`, `cm` | commentes | 10 bits et HDR permanent possibles, a activer apres test (`cm_auto_hdr` bascule deja en plein ecran) |
+| `bitdepth` | `DOTS_BITDEPTH` (10 par defaut) | SDR 10 bits : moins de banding, sans HDR. `hyprctl monitors` doit montrer `currentFormat: XRGB2101010`. Repasser a 8 si une capture d'ecran ou un partage d'ecran pose probleme |
+| `cm` | commente | HDR permanent non retenu ; `render.cm_auto_hdr` bascule seul en plein ecran si un jeu le demande |
+
+Cote TV (LG G3) : sur l'entree HDMI utilisee, activer *Ultra HD Deep Colour* (ou *HDMI Deep
+Colour*) et le mode *Game Optimizer* pour la latence et le VRR ; sans Deep Colour, la TV
+refuse le 10 bits a 4K 120 Hz.
 
 Verifier apres connexion :
 
 ```bash
-hyprctl monitors        # scale 2.00, vrr, availableModes contient 3840x2160@120.00Hz
+hyprctl monitors        # scale 2.00, vrr, currentFormat: XRGB2101010, availableModes contient 3840x2160@120.00Hz
 # en jeu plein ecran :
 hyprctl monitors | grep -E 'vrr|activelyTearing|directScanoutTo|tearingBlockedBy'
 ```
