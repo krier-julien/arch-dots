@@ -29,6 +29,9 @@ sudo rsync -a --backup --suffix=.bak --chown=root:root "$REPO_DIR/system/" /
 if [[ "$DOTS_VM" == 1 ]]; then
   info "Mode VM : retrait des fichiers NVIDIA / nct6687"
   sudo rm -f /etc/modprobe.d/nvidia.conf /etc/mkinitcpio.conf.d/nvidia.conf /etc/modules-load.d/nct6687.conf
+elif [[ "$DOTS_NVIDIA_EARLY_KMS" != 1 ]]; then
+  # Pas de modules NVIDIA dans l'initramfs (taille /6, snapshots bootables possibles sur l'ESP)
+  sudo rm -f /etc/mkinitcpio.conf.d/nvidia.conf
 fi
 sudo chmod 0440 /etc/sudoers.d/10-x3d-mode
 sudo chmod 0755 /usr/local/bin/x3d-mode

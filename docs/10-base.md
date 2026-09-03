@@ -8,7 +8,7 @@ Script : `scripts/10-base.sh` (`./install.sh 10`). Redemarrer ensuite.
 |-------|-------|----------|
 | Repos | CachyOS tier **znver4** via `cachyos-repo.sh` | Paquets compiles pour Zen 4 (AVX-512), detection automatique du CPU |
 | Noyau | `linux-cachyos` (BORE + sched-ext), `linux` conserve en secours | Rollback simple si une version CachyOS pose probleme |
-| NVIDIA | `linux-cachyos-nvidia-open` + `nvidia-utils`, modules charges dans l'initramfs | Modules open = choix NVIDIA pour Ada, HDMI 2.1 4K120 VRR gere par le firmware GSP |
+| NVIDIA | `linux-cachyos-nvidia-open` + `nvidia-utils` ; KMS precoce optionnel (`DOTS_NVIDIA_EARLY_KMS`, defaut 0) | Modules open = choix NVIDIA pour Ada, HDMI 2.1 4K120 VRR gere par le firmware GSP |
 | Scheduler | `scx_lavd --autopilot` via notre `scx.service` (le paquet `scx-scheds` ne fournit plus d'unite), config `/etc/default/scx` | Conscient des 2 CCD heterogenes du 7950X3D, faible latence |
 | V-Cache | `/usr/local/bin/x3d-mode cache|frequency` (sudo sans mot de passe pour wheel) | gamemode basculera en `cache` au lancement d'un jeu (Phase 3) |
 | Priorites | `ananicy-cpp` + regles CachyOS | Nice/ionice automatiques pour jeux, compilateurs, navigateurs |
@@ -47,6 +47,13 @@ sudo limine-update --dry-run 2>/dev/null || cat /boot/limine.conf
 
 Si `x3d-mode` repond que le driver est indisponible : verifier dans le BIOS
 `CPPC Dynamic Preferred Cores = Driver`.
+
+## Taille de l'ESP et snapshots bootables
+
+`limine-snapper-sync` copie noyau + initramfs de chaque snapshot sur l'ESP (1 GiB). Avec les
+modules NVIDIA dans l'initramfs (~180 MiB par noyau), une entree coute ~370 MiB et la
+synchronisation s'arrete (« will exceed the 85% limit »). D'ou `DOTS_NVIDIA_EARLY_KMS=0` par
+defaut et `MAX_SNAPSHOT_ENTRIES=3`. Verifier : `df -h /boot`, `ls -lh /boot/*.img`.
 
 ## Entree Limine par defaut
 
