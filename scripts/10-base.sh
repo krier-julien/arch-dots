@@ -69,8 +69,11 @@ if ! sudo grep -q '^### Entete Limine gere par arch-dots' /boot/limine.conf 2>/d
   sudo cp "$REPO_DIR/templates/limine.conf" /boot/limine.conf
 fi
 # limine-mkinitcpio-hook lit /etc/default/limine a l'installation : l'ordre compte.
-# limine-snapper-sync peut demander "run limine-mkinitcpio now?" : on repond oui
-yes | sudo pacman -S --needed --noconfirm limine-mkinitcpio-hook limine-snapper-sync
+# limine-snapper-sync peut demander "run limine-mkinitcpio now?" : on repond oui.
+# (yes || true) : yes meurt en SIGPIPE quand pacman se termine, ce qui ferait echouer le script sous pipefail.
+if ! pacman -Qq limine-mkinitcpio-hook limine-snapper-sync >/dev/null 2>&1; then
+  (yes 2>/dev/null || true) | sudo pacman -S --needed --noconfirm limine-mkinitcpio-hook limine-snapper-sync
+fi
 sudo mkinitcpio -P || warn "mkinitcpio a signale des erreurs : verifier la sortie ci-dessus (images normalement generees)"
 # Entree par defaut et delai : mis a jour a chaque passage (l'entete n'est copie qu'une fois)
 sudo sed -i -e "s/^default_entry: .*/default_entry: ${DOTS_LIMINE_DEFAULT_ENTRY}/" \
