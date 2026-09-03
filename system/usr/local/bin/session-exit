@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+# Fermeture propre de la session Hyprland avant logout / reboot / poweroff / hibernate.
+# Sans cela, systemd tue les applications (SIGKILL) et Brave, OBS... croient avoir plante.
+#   session-exit logout|reboot|poweroff|hibernate
+set -uo pipefail
+action="${1:-logout}"
+case "$action" in logout|reboot|poweroff|hibernate) ;; *) echo "usage: $0 logout|reboot|poweroff|hibernate" >&2; exit 2 ;; esac
+
+# 1. Steam : la croix ne fait que minimiser dans le tray ; -shutdown le ferme vraiment (sauvegarde cloud)
+pgrep -x steam >/dev/null && steam -shutdown >/dev/null 2>&1 &
+
+# 2. Demande de fermeture (xdg toplevel close) a chaque fenetre, comme un clic sur la croix
+close_all() {
+  hyprctl clients -j 2>/dev/null | jq -r '.[].address' | while read -r addr; do
+    hyprctl dispatch closewindow "address:$addr" >/dev/null 2>&1
+  done
+}
+remaining() { hyprctl clients -j 2>/dev/null | jq 'length' 2>/dev/null || echo 0; }
+
+close_all
+for _ in $(seq 1 20); do          # jusqu'a 20 s, en re-demandant la fermeture toutes les 5 s
+  [[ "$(remaining)" -eq 0 ]] && break
+  sleep 1
+  (( $(date +%s) % 5 == 0 )) && close_all
+done
+
+# 3. Ce qui reste (apps dans le tray sans fenetre, Steam) recoit SIGTERM via ses unites uwsm
+for _ in $(seq 1 10); do pgrep -x steam >/dev/null || break; sleep 1; done
+systemctl --user stop app-graphical.slice 2>/dev/null || true
+
+# 4. Action
+case "$action" in
+  logout)    uwsm stop 2>/dev/null || loginctl terminate-session "${XDG_SESSION_ID:-}" ;;
+  reboot)    systemctl reboot ;;
+  poweroff)  systemctl poweroff ;;
+  hibernate) systemctl hibernate ;;
+esac

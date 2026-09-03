@@ -35,5 +35,25 @@
         "useTwelveHourClock": false,
         "gpuType": "Auto",
         "smartScheme": true
+    },
+    "session": {
+        "commands": {
+            "logout": [
+                "/usr/local/bin/session-exit",
+                "logout"
+            ],
+            "shutdown": [
+                "/usr/local/bin/session-exit",
+                "poweroff"
+            ],
+            "hibernate": [
+                "/usr/local/bin/session-exit",
+                "hibernate"
+            ],
+            "reboot": [
+                "/usr/local/bin/session-exit",
+                "reboot"
+            ]
+        }
     }
 }

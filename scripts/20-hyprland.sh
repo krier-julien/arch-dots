@@ -50,7 +50,8 @@ else
 fi
 [[ -L "$CFG/caelestia/hypr-user.lua" ]] || warn "hypr-user.lua n'est plus un symlink vers le repo"
 
-# --- 4. Session : SDDM + uwsm, fish par defaut ----------------------------------------
+# --- 4. Session : SDDM + uwsm, fish par defaut, fermeture propre -------------------------
+sudo install -m 0755 "$REPO_DIR/system/usr/local/bin/session-exit" /usr/local/bin/session-exit
 # Themes qylock (https://github.com/Darkkal44/qylock) : copie de tous les themes Qt6
 QYLOCK_SRC="$HOME/.local/src/qylock"
 if [[ -d "$QYLOCK_SRC/.git" ]]; then git -C "$QYLOCK_SRC" pull -q --ff-only || warn "qylock: pull impossible"

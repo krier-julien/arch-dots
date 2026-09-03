@@ -48,6 +48,15 @@ hyprctl monitors        # scale 2.00, vrr, currentFormat: XRGB2101010, available
 hyprctl monitors | grep -E 'vrr|activelyTearing|directScanoutTo|tearingBlockedBy'
 ```
 
+## Fermeture propre (reboot, extinction, deconnexion)
+
+Le menu de session Caelestia (`Ctrl + Alt + Delete`) appelle `/usr/local/bin/session-exit`, qui
+demande la fermeture de chaque fenetre via Hyprland (equivalent d'un clic sur la croix), arrete
+Steam avec `steam -shutdown`, attend jusqu'a 20 s, puis execute l'action. Brave et OBS quittent
+ainsi proprement au lieu d'etre tues par systemd, et n'affichent plus d'ecran « plantage » au
+demarrage suivant. Dans un terminal, `reboot`, `poweroff` et `logout` sont des abreviations fish
+vers ce script ; `systemctl reboot` direct contourne la fermeture propre.
+
 ## Workspaces fixes et autostart
 
 | WS | Application | Classe attendue | Autostart |
