@@ -2,45 +2,101 @@
   "archinstall-language": "English",
   "bootloader_config": {
     "bootloader": "Limine",
-    "removable": false,
-    "uki": false
+    "uki": false,
+    "removable": false
   },
   "disk_config": {
+    "config_type": "default_layout",
     "btrfs_options": {
-      "snapshot_config": { "type": "Snapper" }
+      "snapshot_config": {
+        "type": "Snapper"
+      }
     },
-    "config_type": "manual_partitioning",
     "device_modifications": [
       {
         "device": "/dev/nvme0n1",
         "wipe": true,
         "partitions": [
           {
+            "obj_id": "4b5bf6bd-6d52-4e79-b0ad-a90359b52aaf",
             "status": "create",
             "type": "primary",
             "fs_type": "fat32",
-            "flags": ["boot", "esp"],
-            "start": { "unit": "MiB", "value": 1, "sector_size": null },
-            "size": { "unit": "GiB", "value": 1, "sector_size": null },
+            "flags": [
+              "boot",
+              "esp"
+            ],
+            "start": {
+              "value": 1,
+              "unit": "MiB",
+              "sector_size": {
+                "unit": "B",
+                "value": 512
+              }
+            },
+            "size": {
+              "value": 1024,
+              "unit": "MiB",
+              "sector_size": {
+                "unit": "B",
+                "value": 512
+              }
+            },
             "mountpoint": "/boot",
             "mount_options": [],
+            "dev_path": null,
             "btrfs": []
           },
           {
+            "obj_id": "74bd0bdf-3fdd-4ebb-ab9e-e248d49bb2f5",
             "status": "create",
             "type": "primary",
             "fs_type": "btrfs",
             "flags": [],
-            "start": { "unit": "GiB", "value": 1, "sector_size": null },
-            "size": { "unit": "Percent", "value": 100, "sector_size": null, "total_size": null },
+            "start": {
+              "value": 1025,
+              "unit": "MiB",
+              "sector_size": {
+                "unit": "B",
+                "value": 512
+              }
+            },
+            "size": {
+              "value": 952842,
+              "unit": "MiB",
+              "sector_size": {
+                "unit": "B",
+                "value": 512
+              }
+            },
             "mountpoint": null,
-            "mount_options": ["compress=zstd:1", "noatime", "discard=async"],
+            "mount_options": [
+              "compress=zstd:1",
+              "noatime",
+              "discard=async"
+            ],
+            "dev_path": null,
             "btrfs": [
-              { "name": "@",          "mountpoint": "/" },
-              { "name": "@home",      "mountpoint": "/home" },
-              { "name": "@log",       "mountpoint": "/var/log" },
-              { "name": "@pkg",       "mountpoint": "/var/cache/pacman/pkg" },
-              { "name": "@snapshots", "mountpoint": "/.snapshots" }
+              {
+                "name": "@",
+                "mountpoint": "/"
+              },
+              {
+                "name": "@home",
+                "mountpoint": "/home"
+              },
+              {
+                "name": "@log",
+                "mountpoint": "/var/log"
+              },
+              {
+                "name": "@pkg",
+                "mountpoint": "/var/cache/pacman/pkg"
+              },
+              {
+                "name": "@snapshots",
+                "mountpoint": "/.snapshots"
+              }
             ]
           }
         ]
@@ -48,25 +104,31 @@
     ]
   },
   "hostname": "arch",
-  "kernels": ["linux"],
+  "kernels": [
+    "linux"
+  ],
   "locale_config": {
     "kb_layout": "us",
-    "sys_enc": "UTF-8",
-    "sys_lang": "en_US.UTF-8"
+    "sys_lang": "en_US",
+    "sys_enc": "UTF-8"
   },
-  "mirror_config": {
-    "mirror_regions": { "Germany": [], "France": [] },
-    "custom_mirrors": []
+  "network_config": {
+    "type": "nm"
   },
-  "network_config": { "type": "nm" },
   "ntp": true,
   "packages": [
-    "git", "base-devel", "vim", "networkmanager", "openssh", "btrfs-progs", "snapper", "limine"
+    "git",
+    "base-devel",
+    "vim",
+    "openssh",
+    "btrfs-progs",
+    "snapper"
   ],
   "parallel_downloads": 10,
   "profile_config": null,
-  "services": ["NetworkManager", "sshd"],
+  "services": [
+    "NetworkManager"
+  ],
   "swap": false,
-  "timezone": "Europe/Luxembourg",
-  "version": "3.0.x"
+  "timezone": "Europe/Luxembourg"
 }

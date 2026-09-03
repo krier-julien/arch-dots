@@ -47,18 +47,24 @@ Sur le live ISO :
 loadkeys us
 pacman -Sy git               # archinstall est deja sur l'ISO
 git clone https://github.com/krier-julien/arch-dots /tmp/arch-dots
-cp /tmp/arch-dots/archinstall/user_credentials.json.example /tmp/creds.json
+cd /tmp/arch-dots
+cp archinstall/user_credentials.json.example /tmp/creds.json
 vim /tmp/creds.json          # mots de passe ; le nom d'utilisateur doit etre celui de DOTS_USER (config.env)
-lsblk                        # identifier le NVMe cible
+lsblk -o NAME,SIZE,MODEL     # identifier le disque cible (nvme0n1, vda en VM...)
 ```
 
-Adapter `device` dans `archinstall/user_configuration.json` si le disque n'est pas
-`/dev/nvme0n1`, puis :
+archinstall exige des tailles de partition explicites (pas de « reste du disque ») : le
+generateur lit la taille reelle du disque et ecrit un JSON valide pour la version courante
+d'archinstall (ESP 1 GiB + Btrfs sur le reste, sous-volumes, snapper, Limine) :
 
 ```bash
-archinstall --config /tmp/arch-dots/archinstall/user_configuration.json \
-            --creds  /tmp/creds.json
+python3 archinstall/gen-config.py --device /dev/nvme0n1 -o /tmp/config.json   # /dev/vda en VM
+archinstall --config /tmp/config.json --creds /tmp/creds.json
 ```
+
+Options : `--hostname`, `--keymap`, `--timezone`, `--lang` (defauts : arch, us,
+Europe/Luxembourg, en_US). Le `archinstall/user_configuration.json` du repo est la sortie
+du generateur pour le SN850X 1 To, a titre de reference.
 
 archinstall ouvre son menu avec les valeurs pre-remplies. Verifier surtout :
 
@@ -71,10 +77,9 @@ archinstall ouvre son menu avec les valeurs pre-remplies. Verifier surtout :
 | Network         | NetworkManager                                             |
 | Swap            | desactive (zram configure par le repo)                     |
 
-Si le format JSON de votre version d'archinstall differe et refuse le fichier (le champ
-`version` est volontairement generique, archinstall avertit mais continue), re-saisir les
-valeurs du tableau dans le menu, puis `Save configuration` et remplacer
-`archinstall/user_configuration.json` par l'export. Ce fichier est la source de verite.
+Le format a ete cale sur le code d'archinstall 3.x (septembre 2026). Si une version future
+refuse le fichier, re-saisir les valeurs du tableau dans le menu, puis `Save configuration`
+et me transmettre l'export pour mettre a jour `gen-config.py`.
 
 archinstall demande aussi le mot de passe root et l'utilisateur si `--creds` n'a pas ete
 accepte : creer le meme utilisateur que `DOTS_USER`, membre de `wheel` (sudo).
@@ -148,8 +153,8 @@ Hyprland utilise l'ecran virtuel en mode `preferred`.
 Sur un hote Arch, `scripts/vm/create-test-vm.sh <archlinux.iso>` cree la VM complete avec
 libvirt (prerequis listes en tete du script), puis `virt-viewer --attach arch-dots-test`.
 Le disque d'installation est `/dev/vda`, le second `/dev/vdb`. Dans le `config.env` de la VM :
-`DOTS_VM=1`, `DOTS_MONITOR="Virtual-1"`, `DOTS_BTRFS_EXTRA_DEVICE="/dev/vdb"`, et dans le JSON
-archinstall `device` = `/dev/vda`.
+`DOTS_VM=1`, `DOTS_MONITOR="Virtual-1"`, `DOTS_BTRFS_EXTRA_DEVICE="/dev/vdb"`, et generer la
+config archinstall avec `--device /dev/vda`.
 
 Reglages equivalents si tu preferes virt-manager :
 
