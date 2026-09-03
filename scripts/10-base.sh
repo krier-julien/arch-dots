@@ -69,11 +69,13 @@ if ! sudo grep -q '^### Entete Limine gere par arch-dots' /boot/limine.conf 2>/d
   sudo cp "$REPO_DIR/templates/limine.conf" /boot/limine.conf
 fi
 # limine-mkinitcpio-hook lit /etc/default/limine a l'installation : l'ordre compte.
-sudo pacman -S --needed --noconfirm limine-mkinitcpio-hook limine-snapper-sync
+# limine-snapper-sync peut demander "run limine-mkinitcpio now?" : on repond oui
+yes | sudo pacman -S --needed --noconfirm limine-mkinitcpio-hook limine-snapper-sync
 sudo mkinitcpio -P || warn "mkinitcpio a signale des erreurs : verifier la sortie ci-dessus (images normalement generees)"
 sudo limine-update
 sudo grep -q '^/+' /boot/limine.conf || die "limine-update n'a genere aucune entree dans /boot/limine.conf"
-info "Entrees Limine : $(sudo grep -c '^/+' /boot/limine.conf)"
+info "Limine : $(sudo grep -c '^/+' /boot/limine.conf) groupe(s), $(sudo grep -c '^//' /boot/limine.conf) noyau(x) :"
+sudo grep -E '^/{1,2}' /boot/limine.conf | sed 's/^/    /' 
 
 # --- 5b. Second NVMe dans le Btrfs racine (optionnel, DOTS_BTRFS_EXTRA_DEVICE) ---------
 if [[ -n "$DOTS_BTRFS_EXTRA_DEVICE" ]]; then
@@ -116,7 +118,16 @@ sudo btrfs quota disable / 2>/dev/null || true   # les qgroups coutent cher en p
 
 # --- 7. Services ----------------------------------------------------------------------
 sudo systemctl daemon-reload
-units=(NetworkManager bluetooth fstrim.timer systemd-timesyncd ananicy-cpp scx snapper-cleanup.timer limine-snapper-sync)
+units=(NetworkManager bluetooth fstrim.timer systemd-timesyncd ananicy-cpp snapper-cleanup.timer limine-snapper-sync)
+# sched-ext : le paquet scx-scheds fournit soit scx_loader.service (recent, config /etc/scx_loader.toml),
+# soit scx.service (config /etc/default/scx). On active celui qui existe.
+if systemctl list-unit-files scx_loader.service >/dev/null 2>&1 && systemctl list-unit-files | grep -q '^scx_loader.service'; then
+  units+=(scx_loader)
+elif systemctl list-unit-files | grep -q '^scx.service'; then
+  units+=(scx)
+else
+  warn "Aucune unite scx trouvee (pacman -Ql scx-scheds | grep -E 'service|toml')"
+fi
 [[ "$DOTS_VM" == 1 ]] || units+=(nvidia-suspend nvidia-hibernate nvidia-resume)
 for u in "${units[@]}"; do
   sudo systemctl enable --now "$u" 2>/dev/null || sudo systemctl enable "$u" || warn "unite $u absente"
