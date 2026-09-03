@@ -74,7 +74,8 @@ yes | sudo pacman -S --needed --noconfirm limine-mkinitcpio-hook limine-snapper-
 sudo mkinitcpio -P || warn "mkinitcpio a signale des erreurs : verifier la sortie ci-dessus (images normalement generees)"
 sudo limine-update
 sudo grep -q '^/+' /boot/limine.conf || die "limine-update n'a genere aucune entree dans /boot/limine.conf"
-info "Entrees Limine : $(sudo grep -c '^/+' /boot/limine.conf)"
+info "Limine : $(sudo grep -c '^/+' /boot/limine.conf) groupe(s), $(sudo grep -c '^//' /boot/limine.conf) noyau(x) :"
+sudo grep -E '^/{1,2}' /boot/limine.conf | sed 's/^/    /' 
 
 # --- 5b. Second NVMe dans le Btrfs racine (optionnel, DOTS_BTRFS_EXTRA_DEVICE) ---------
 if [[ -n "$DOTS_BTRFS_EXTRA_DEVICE" ]]; then
