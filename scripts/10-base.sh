@@ -119,16 +119,9 @@ sudo btrfs quota disable / 2>/dev/null || true   # les qgroups coutent cher en p
 # --- 7. Services ----------------------------------------------------------------------
 sudo systemctl daemon-reload
 units=(NetworkManager bluetooth fstrim.timer systemd-timesyncd ananicy-cpp snapper-cleanup.timer limine-snapper-sync)
-# sched-ext : le paquet scx-scheds fournit soit scx_loader.service (recent, config /etc/scx_loader.toml),
-# soit scx.service (config /etc/default/scx). On active celui qui existe.
-if systemctl list-unit-files scx_loader.service >/dev/null 2>&1 && systemctl list-unit-files | grep -q '^scx_loader.service'; then
-  units+=(scx_loader)
-elif systemctl list-unit-files | grep -q '^scx.service'; then
-  units+=(scx)
-else
-  warn "Aucune unite scx trouvee (pacman -Ql scx-scheds | grep -E 'service|toml')"
-fi
-[[ "$DOTS_VM" == 1 ]] || units+=(nvidia-suspend nvidia-hibernate nvidia-resume)
+# sched-ext : scx-scheds ne fournit plus d'unite systemd ; la notre (system/etc/systemd/system/scx.service)
+# lit /etc/default/scx. Si une future version du paquet reintroduit scx_loader.service, on le prefere.
+if systemctl list-unit-files 2>/dev/null | grep -q '^scx_loader.service'; then units+=(scx_loader); else units+=(scx); fi
 for u in "${units[@]}"; do
   sudo systemctl enable --now "$u" 2>/dev/null || sudo systemctl enable "$u" || warn "unite $u absente"
 done
