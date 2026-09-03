@@ -1,7 +1,3 @@
-# Phase 5 : controle Kraken Elite et hub Lian Li Uni (liquidctl >= 1.16.0)
+# Phase 5 : controle Kraken Elite et hub Lian Li Uni (liquidctl >= 1.16.0).
+# liquidctl tire ses dependances (pyusb, hidapi). i2c-tools/smbus non requis (RAM/carte mere seulement).
 liquidctl
-python-pyusb
-python-hidapi
-python-smbus
-python-pillow
-i2c-tools
