@@ -69,7 +69,8 @@ if ! sudo grep -q '^### Entete Limine gere par arch-dots' /boot/limine.conf 2>/d
   sudo cp "$REPO_DIR/templates/limine.conf" /boot/limine.conf
 fi
 # limine-mkinitcpio-hook lit /etc/default/limine a l'installation : l'ordre compte.
-sudo pacman -S --needed --noconfirm limine-mkinitcpio-hook limine-snapper-sync
+# limine-snapper-sync peut demander "run limine-mkinitcpio now?" : on repond oui
+yes | sudo pacman -S --needed --noconfirm limine-mkinitcpio-hook limine-snapper-sync
 sudo mkinitcpio -P || warn "mkinitcpio a signale des erreurs : verifier la sortie ci-dessus (images normalement generees)"
 sudo limine-update
 sudo grep -q '^/+' /boot/limine.conf || die "limine-update n'a genere aucune entree dans /boot/limine.conf"
