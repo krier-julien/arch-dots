@@ -1,0 +1,4 @@
+# Elgato 4K X (vendor 0fd9). Lien stable /dev/video-elgato sur le premier noeud video
+# (index 0 = flux capture ; l'index 1 est le noeud metadata) et acces utilisateur.
+SUBSYSTEM=="video4linux", ATTRS{idVendor}=="0fd9", ATTR{index}=="0", SYMLINK+="video-elgato", TAG+="uaccess"
+SUBSYSTEM=="usb", ATTRS{idVendor}=="0fd9", TAG+="uaccess"

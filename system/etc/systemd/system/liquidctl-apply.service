@@ -1,0 +1,15 @@
+[Unit]
+Description=Apply fixed pump/fan speeds via liquidctl
+After=systemd-udev-settle.service multi-user.target
+Wants=systemd-udev-settle.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/liquidctl-apply
+RemainAfterExit=yes
+# Redemarre si les peripheriques n'etaient pas encore la
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

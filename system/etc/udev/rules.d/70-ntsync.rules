@@ -1,0 +1,2 @@
+# /dev/ntsync accessible aux utilisateurs (Wine l'ouvre en lecture seule ; 0644 suffit)
+KERNEL=="ntsync", MODE="0644"

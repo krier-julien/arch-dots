@@ -1,0 +1,2 @@
+# gamemode (utilisateur) bascule le mode V-Cache sans mot de passe
+%wheel ALL=(root) NOPASSWD: /usr/local/bin/x3d-mode

@@ -1,0 +1,7 @@
+# Phase 5 : controle Kraken Elite et hub Lian Li Uni (liquidctl >= 1.16.0)
+liquidctl
+python-pyusb
+python-hidapi
+python-smbus
+python-pillow
+i2c-tools

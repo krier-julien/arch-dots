@@ -1,0 +1,134 @@
+{
+  "archinstall-language": "English",
+  "bootloader_config": {
+    "bootloader": "Limine",
+    "uki": false,
+    "removable": false
+  },
+  "disk_config": {
+    "config_type": "default_layout",
+    "btrfs_options": {
+      "snapshot_config": {
+        "type": "Snapper"
+      }
+    },
+    "device_modifications": [
+      {
+        "device": "/dev/nvme0n1",
+        "wipe": true,
+        "partitions": [
+          {
+            "obj_id": "4b5bf6bd-6d52-4e79-b0ad-a90359b52aaf",
+            "status": "create",
+            "type": "primary",
+            "fs_type": "fat32",
+            "flags": [
+              "boot",
+              "esp"
+            ],
+            "start": {
+              "value": 1,
+              "unit": "MiB",
+              "sector_size": {
+                "unit": "B",
+                "value": 512
+              }
+            },
+            "size": {
+              "value": 1024,
+              "unit": "MiB",
+              "sector_size": {
+                "unit": "B",
+                "value": 512
+              }
+            },
+            "mountpoint": "/boot",
+            "mount_options": [],
+            "dev_path": null,
+            "btrfs": []
+          },
+          {
+            "obj_id": "74bd0bdf-3fdd-4ebb-ab9e-e248d49bb2f5",
+            "status": "create",
+            "type": "primary",
+            "fs_type": "btrfs",
+            "flags": [],
+            "start": {
+              "value": 1025,
+              "unit": "MiB",
+              "sector_size": {
+                "unit": "B",
+                "value": 512
+              }
+            },
+            "size": {
+              "value": 952842,
+              "unit": "MiB",
+              "sector_size": {
+                "unit": "B",
+                "value": 512
+              }
+            },
+            "mountpoint": null,
+            "mount_options": [
+              "compress=zstd:1",
+              "noatime",
+              "discard=async"
+            ],
+            "dev_path": null,
+            "btrfs": [
+              {
+                "name": "@",
+                "mountpoint": "/"
+              },
+              {
+                "name": "@home",
+                "mountpoint": "/home"
+              },
+              {
+                "name": "@log",
+                "mountpoint": "/var/log"
+              },
+              {
+                "name": "@pkg",
+                "mountpoint": "/var/cache/pacman/pkg"
+              },
+              {
+                "name": "@snapshots",
+                "mountpoint": "/.snapshots"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "hostname": "arch",
+  "kernels": [
+    "linux"
+  ],
+  "locale_config": {
+    "kb_layout": "us",
+    "sys_lang": "en_US",
+    "sys_enc": "UTF-8"
+  },
+  "network_config": {
+    "type": "nm"
+  },
+  "ntp": true,
+  "packages": [
+    "git",
+    "base-devel",
+    "vim",
+    "openssh",
+    "btrfs-progs",
+    "snapper"
+  ],
+  "parallel_downloads": 10,
+  "profile_config": null,
+  "services": [
+    "NetworkManager"
+  ],
+  "swap": false,
+  "timezone": "Europe/Luxembourg"
+}

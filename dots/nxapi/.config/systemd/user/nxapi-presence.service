@@ -1,0 +1,17 @@
+[Unit]
+Description=nxapi - Nintendo Switch presence to Discord (secondary account)
+After=graphical-session.target
+PartOf=graphical-session.target
+
+[Service]
+Type=simple
+# Identifiants hors du repo : ~/.config/nxapi/presence.env (voir presence.env.example)
+EnvironmentFile=%h/.config/nxapi/presence.env
+# NXAPI_EXTRA_ARGS volontairement non quote : options facultatives (--user, --discord-user, --show-play-time...)
+ExecStart=%h/.local/bin/nxapi nso presence --friend-nsaid ${NXAPI_FRIEND_NSAID} --discord-preconnect $NXAPI_EXTRA_ARGS
+Restart=on-failure
+RestartSec=30
+Environment=NODE_ENV=production
+
+[Install]
+WantedBy=graphical-session.target

@@ -1,0 +1,11 @@
+[Unit]
+Description=Re-apply liquidctl speeds after resume
+After=suspend.target hibernate.target hybrid-sleep.target suspend-then-hibernate.target
+
+[Service]
+Type=oneshot
+ExecStart=/bin/sleep 3
+ExecStart=/usr/local/bin/liquidctl-apply
+
+[Install]
+WantedBy=suspend.target hibernate.target hybrid-sleep.target suspend-then-hibernate.target

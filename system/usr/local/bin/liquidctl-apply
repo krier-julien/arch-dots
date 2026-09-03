@@ -1,0 +1,40 @@
+#!/usr/bin/env bash
+# Applique /etc/liquidctl/speeds.conf (vitesses fixes) au Kraken Elite et au hub Lian Li Uni.
+set -uo pipefail
+CONF=/etc/liquidctl/speeds.conf
+[[ -r $CONF ]] || { echo "$CONF manquant" >&2; exit 1; }
+# shellcheck disable=SC1090
+source "$CONF"
+LC=(liquidctl)   # ajouter --json ou -v pour deboguer
+
+# Les peripheriques USB peuvent mettre quelques secondes a apparaitre au boot
+for _ in $(seq 1 10); do
+  "${LC[@]}" list 2>/dev/null | grep -qiE 'kraken|lian li' && break
+  sleep 1
+done
+
+"${LC[@]}" initialize all >/dev/null 2>&1 || echo "liquidctl initialize: avertissement" >&2
+
+# Kraken Elite : pompe + LCD
+if "${LC[@]}" list 2>/dev/null | grep -qi kraken; then
+  "${LC[@]}" --match kraken set pump speed "${KRAKEN_PUMP:-70}"
+  [[ -n "${KRAKEN_FAN:-}" ]] && "${LC[@]}" --match kraken set fan speed "${KRAKEN_FAN}"
+  case "${KRAKEN_LCD:-}" in
+    liquid|duty) "${LC[@]}" --match kraken set lcd screen "${KRAKEN_LCD}" 2>/dev/null || true ;;
+    "") ;;
+    *)  "${LC[@]}" --match kraken set lcd screen gif "${KRAKEN_LCD}" 2>/dev/null || true ;;
+  esac
+else
+  echo "Kraken non detecte" >&2
+fi
+
+# Lian Li Uni : 4 canaux en vitesse fixe (mode PWM sync desactive par l'appel set)
+if "${LC[@]}" list 2>/dev/null | grep -qi 'lian li'; then
+  for ch in 1 2 3 4; do
+    v="LIANLI_FAN${ch}"
+    [[ -n "${!v:-}" ]] && "${LC[@]}" --match 'lian li' set "fan${ch}" speed "${!v}"
+  done
+else
+  echo "Hub Lian Li non detecte" >&2
+fi
+"${LC[@]}" status

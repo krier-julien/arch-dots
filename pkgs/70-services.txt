@@ -1,0 +1,3 @@
+# Phase 7 : nxapi (installe via npm dans ~/.local, pas de paquet AUR fiable)
+nodejs
+npm

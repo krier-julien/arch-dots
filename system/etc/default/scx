@@ -1,0 +1,5 @@
+# Scheduler sched-ext au boot (service scx.service, paquet scx-scheds)
+# scx_lavd : conscient de la topologie, bon choix jeu/latence sur 7950X3D (2 CCD heterogenes)
+SCX_SCHEDULER=scx_lavd
+# Options possibles : --performance (tous coeurs actifs), --autopilot (adaptatif)
+SCX_FLAGS='--autopilot'

@@ -1,0 +1,37 @@
+# Phase 2 : Hyprland, portails, SDDM, rice Caelestia.
+# `caelestia install` installe lui-meme les dependances de ses composants (foot, fish,
+# starship, thunar, quickshell, fontes du shell, gtk/qt theming, polkit, keyring...).
+# Cette liste ne contient que ce que Caelestia ne gere pas.
+hyprland
+uwsm
+xdg-desktop-portal-hyprland
+xdg-desktop-portal-gtk
+xorg-xwayland
+qt5-wayland
+qt6-wayland
+sddm
+sddm-astronaut-theme
+caelestia-cli
+caelestia-shell
+hyprpicker
+gvfs
+tumbler
+playerctl
+bibata-cursor-theme
+noto-fonts
+noto-fonts-cjk
+noto-fonts-emoji
+inter-font
+ttf-jetbrains-mono-nerd
+# Dependances des themes SDDM qylock (Qt6 + video)
+qt6-declarative
+qt6-5compat
+qt6-svg
+qt6-multimedia
+qt6-multimedia-ffmpeg
+gst-plugins-base
+gst-plugins-good
+gst-plugins-bad
+gst-plugins-ugly
+fzf
+libnotify
