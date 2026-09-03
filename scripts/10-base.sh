@@ -92,6 +92,12 @@ if [[ -n "$DOTS_BTRFS_EXTRA_DEVICE" ]]; then
   dev_fs=$(lsblk -no FSTYPE "$dev" | head -1)
   rootdev=$(findmnt -no SOURCE / | sed 's/\[.*//')
   [[ "$dev" != "$rootdev" ]] || die "$dev est deja le disque racine"
+  # Garde-fous : jamais un disque qui porte une partition montee (systeme, ESP...) ni le parent de la racine
+  if [[ -n "$(lsblk -no MOUNTPOINTS "$dev" | tr -d ' \n')" ]]; then
+    die "$dev contient des partitions montees ($(lsblk -no NAME,MOUNTPOINTS "$dev" | tr -s ' \n' ' ')) : ce n'est pas un disque a ajouter. Verifier lsblk."
+  fi
+  root_parent=$(lsblk -no PKNAME "$rootdev" 2>/dev/null | head -1)
+  [[ -n "$root_parent" && "$dev" == "/dev/$root_parent" ]] && die "$dev est le disque qui porte la racine ($rootdev)"
   if [[ "$dev_fs" == btrfs && "$dev_uuid" == "$root_uuid" ]]; then
     ok "$dev fait deja partie du Btrfs racine (UUID $root_uuid)"
   else
