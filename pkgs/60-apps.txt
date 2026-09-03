@@ -1,0 +1,7 @@
+# Phase 6 : applications
+brave-origin-bin
+vesktop
+pear-desktop-bin
+plezy-bin
+xdg-utils
+xdg-user-dirs

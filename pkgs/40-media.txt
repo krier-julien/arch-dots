@@ -1,0 +1,10 @@
+# Phase 4 : OBS, capture Elgato 4K X, outils PipeWire
+obs-studio
+obs-vkcapture
+lib32-obs-vkcapture
+obs-pipewire-audio-capture
+v4l-utils
+cameractrls
+ffmpeg
+qpwgraph
+helvum

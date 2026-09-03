@@ -1,0 +1,72 @@
+{
+  "archinstall-language": "English",
+  "bootloader_config": {
+    "bootloader": "Limine",
+    "removable": false,
+    "uki": false
+  },
+  "disk_config": {
+    "btrfs_options": {
+      "snapshot_config": { "type": "Snapper" }
+    },
+    "config_type": "manual_partitioning",
+    "device_modifications": [
+      {
+        "device": "/dev/nvme0n1",
+        "wipe": true,
+        "partitions": [
+          {
+            "status": "create",
+            "type": "primary",
+            "fs_type": "fat32",
+            "flags": ["boot", "esp"],
+            "start": { "unit": "MiB", "value": 1, "sector_size": null },
+            "size": { "unit": "GiB", "value": 1, "sector_size": null },
+            "mountpoint": "/boot",
+            "mount_options": [],
+            "btrfs": []
+          },
+          {
+            "status": "create",
+            "type": "primary",
+            "fs_type": "btrfs",
+            "flags": [],
+            "start": { "unit": "GiB", "value": 1, "sector_size": null },
+            "size": { "unit": "Percent", "value": 100, "sector_size": null, "total_size": null },
+            "mountpoint": null,
+            "mount_options": ["compress=zstd:1", "noatime", "discard=async"],
+            "btrfs": [
+              { "name": "@",          "mountpoint": "/" },
+              { "name": "@home",      "mountpoint": "/home" },
+              { "name": "@log",       "mountpoint": "/var/log" },
+              { "name": "@pkg",       "mountpoint": "/var/cache/pacman/pkg" },
+              { "name": "@snapshots", "mountpoint": "/.snapshots" }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "hostname": "obsidian",
+  "kernels": ["linux"],
+  "locale_config": {
+    "kb_layout": "fr",
+    "sys_enc": "UTF-8",
+    "sys_lang": "fr_FR.UTF-8"
+  },
+  "mirror_config": {
+    "mirror_regions": { "France": [] },
+    "custom_mirrors": []
+  },
+  "network_config": { "type": "nm" },
+  "ntp": true,
+  "packages": [
+    "git", "base-devel", "vim", "networkmanager", "openssh", "btrfs-progs", "snapper", "limine"
+  ],
+  "parallel_downloads": 10,
+  "profile_config": null,
+  "services": ["NetworkManager", "sshd"],
+  "swap": false,
+  "timezone": "Europe/Paris",
+  "version": "3.0.x"
+}
