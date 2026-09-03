@@ -6,3 +6,5 @@ archinstall/user_credentials.json
 .env
 *.swp
 .DS_Store
+dots/nxapi/.config/nxapi/presence.env
+.config/nxapi/presence.env

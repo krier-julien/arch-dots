@@ -21,10 +21,10 @@ Decisions prises :
 | 2 | Hyprland : moniteur 4K@120 scale 2, VRR plein ecran, tearing, env NVIDIA, Xwayland HiDPI, portails, SDDM, shell Caelestia | `scripts/20-hyprland.sh`, `dots/caelestia`, `dots/uwsm`, `docs/20-hyprland.md` | fait |
 | 3 | Steam (scaling UI + overlay), MangoHUD cap 117, gamemode + V-Cache auto, ntsync, ProtonPlus | `scripts/30-gaming.sh`, `dots/gaming`, `docs/30-gaming.md` | fait |
 | 4 | udev Elgato 4K X, noeud audio stable + loopback PipeWire persistant, profil OBS NVENC | `scripts/40-media.sh`, `dots/media`, `templates/obs-profile`, `docs/40-media.md` | fait |
-| 5 | liquidctl : vitesses fixes pompe Kraken et hub Lian Li, service systemd | `scripts/50-hardware.sh`, `system/etc/liquidctl` | a faire |
-| 6 | brave-origin par defaut, Vesktop Wayland, Pear-desktop, Plezy | `scripts/60-apps.sh`, `dots/apps` | a faire |
+| 5 | liquidctl : vitesses fixes pompe Kraken et hub Lian Li, services boot + resume | `scripts/50-hardware.sh`, `system/etc/liquidctl`, `docs/50-hardware.md` | fait |
+| 6 | brave-origin par defaut, Vesktop Wayland, Pear-desktop, Plezy, flags Electron | `scripts/60-apps.sh`, `dots/apps`, `docs/60-apps.md` | fait |
 | 7 | Service utilisateur nxapi (compte Nintendo secondaire), secrets hors repo | `scripts/70-services.sh`, `dots/nxapi` | a faire |
-| 8 | Checklist de validation | `docs/80-validation.md` | a faire |
+| 8 | Checklist de validation | `docs/80-validation.md` | fait |
 
 ## Arborescence
 
