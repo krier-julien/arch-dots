@@ -87,20 +87,27 @@ sudo grep -E '^\s*/' /boot/limine.conf | sed 's/^/    /'
 if [[ -n "$DOTS_BTRFS_EXTRA_DEVICE" ]]; then
   dev="$DOTS_BTRFS_EXTRA_DEVICE"
   [[ -b "$dev" ]] || die "$dev n'est pas un peripherique bloc"
-  if sudo btrfs filesystem show / | grep -q "path $dev\b"; then
-    ok "$dev fait deja partie du Btrfs racine"
+  root_uuid=$(findmnt -no UUID /)
+  dev_uuid=$(lsblk -no UUID "$dev" | head -1)
+  dev_fs=$(lsblk -no FSTYPE "$dev" | head -1)
+  rootdev=$(findmnt -no SOURCE / | sed 's/\[.*//')
+  [[ "$dev" != "$rootdev" ]] || die "$dev est deja le disque racine"
+  if [[ "$dev_fs" == btrfs && "$dev_uuid" == "$root_uuid" ]]; then
+    ok "$dev fait deja partie du Btrfs racine (UUID $root_uuid)"
   else
-    rootdev=$(findmnt -no SOURCE / | sed 's/\[.*//')
-    [[ "$dev" != "$rootdev" ]] || die "$dev est deja le disque racine"
     if [[ -n "$(lsblk -no FSTYPE,PARTTYPE "$dev" | tr -d ' \n')" ]]; then
-      [[ "$DOTS_BTRFS_WIPE" == 1 ]] || die "$dev contient des donnees ($(lsblk -no FSTYPE "$dev" | head -1)). Mettre DOTS_BTRFS_WIPE=1 pour l'effacer."
+      [[ "$DOTS_BTRFS_WIPE" == 1 ]] || die "$dev contient des donnees (${dev_fs:-table de partitions}). Mettre DOTS_BTRFS_WIPE=1 pour l'effacer."
       warn "Effacement de $dev dans 10 s (Ctrl+C pour annuler)"; sleep 10
       sudo wipefs -a "$dev"
     fi
-    info "Ajout de $dev au Btrfs racine, puis equilibrage data=single / metadata=raid1"
+    info "Ajout de $dev au Btrfs racine"
     sudo btrfs device add -f "$dev" /
-    sudo btrfs balance start -dconvert=single -mconvert=raid1 /
     sudo mkinitcpio -P || warn "mkinitcpio a signale des erreurs"   # hook btrfs : scan multi-disques au boot
+  fi
+  # Profils attendus sur un volume multi-disques : data single (capacites additionnees), metadata raid1
+  if ! sudo btrfs filesystem df / | grep -q '^Metadata, RAID1'; then
+    info "Equilibrage : data=single, metadata=raid1 (peut prendre quelques minutes)"
+    sudo btrfs balance start -dconvert=single -mconvert=raid1 -sconvert=raid1 -f /
   fi
   sudo btrfs filesystem show /; sudo btrfs filesystem df /
 fi
