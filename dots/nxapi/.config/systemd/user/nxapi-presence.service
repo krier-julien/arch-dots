@@ -5,9 +5,10 @@ PartOf=graphical-session.target
 
 [Service]
 Type=simple
-# Secrets et identifiants hors du repo : ~/.config/nxapi/presence.env (voir presence.env.example)
+# Identifiants hors du repo : ~/.config/nxapi/presence.env (voir presence.env.example)
 EnvironmentFile=%h/.config/nxapi/presence.env
-ExecStart=%h/.local/bin/nxapi nso presence --user ${NXAPI_USER} --friend-nsaid ${NXAPI_FRIEND_NSAID} --discord-preferred-user ${NXAPI_DISCORD_USER}
+# NXAPI_EXTRA_ARGS volontairement non quote : options facultatives (--user, --discord-user, --show-play-time...)
+ExecStart=%h/.local/bin/nxapi nso presence --friend-nsaid ${NXAPI_FRIEND_NSAID} --discord-preconnect $NXAPI_EXTRA_ARGS
 Restart=on-failure
 RestartSec=30
 Environment=NODE_ENV=production

@@ -11,9 +11,12 @@ Deux fichiers, symlinkes depuis `dots/media/` :
 | `~/.config/wireplumber/wireplumber.conf.d/50-elgato.conf` | Renomme l'entree audio de la carte en `elgato_4kx_in`, 48 kHz, jamais suspendue, priorite basse (ne devient pas le micro par defaut) |
 | `~/.config/pipewire/pipewire.conf.d/10-elgato-loopback.conf` | Module loopback `elgato_4kx_in` -> sortie par defaut, ~10 ms de latence, reconnexion automatique |
 
-Le loopback apparait comme un sink « Elgato 4K X -> sortie » dans pwvucontrol : son volume
-regle le niveau de la console, independamment du reste. Pour couper le son de la console
-(par ex. pendant un stream ou OBS gere l'audio), couper ce sink.
+Le loopback apparait comme un flux « Elgato 4K X -> sortie » dans l'onglet Lecture de
+pwvucontrol : son volume regle le niveau de la console independamment du reste, et on peut
+le couper (par ex. pendant un stream ou OBS gere l'audio) ou le rediriger vers une autre sortie.
+
+Nom du noeud releve sur la machine : `alsa_input.usb-Elgato_Elgato_4K_X_A7SNB542249G1I-02.analog-stereo`,
+couvert par le motif `~alsa_input.usb-Elgato.*` de `50-elgato.conf`.
 
 Verifier :
 
@@ -22,9 +25,6 @@ pw-cli ls Node | grep -A2 elgato          # elgato_4kx_in, elgato_loopback.captu
 pw-top                                     # les deux noeuds du loopback doivent etre RUNNING
 pactl list short sources | grep -i elgato
 ```
-
-Si le nom du noeud ALSA ne commence pas par `alsa_input.usb-Elgato`, adapter le motif dans
-`50-elgato.conf` (`pactl list short sources`).
 
 ## Video
 

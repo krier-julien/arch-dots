@@ -7,10 +7,10 @@ need_user
 install_pkgs "$REPO_DIR/pkgs/70-services.txt"
 # npm global dans ~/.local, sans sudo
 npm config set prefix "$HOME/.local" >/dev/null
-if ! command -v "$HOME/.local/bin/nxapi" >/dev/null; then
-  info "npm install -g nxapi"; npm install -g nxapi
-else
-  npm update -g nxapi >/dev/null 2>&1 || true
+cur=$("$HOME/.local/bin/nxapi" --version 2>/dev/null | grep -oE '[0-9][0-9a-z.-]+' | head -1 || true)
+if [[ "$cur" != "$NXAPI_VERSION" ]]; then
+  info "npm install -g nxapi@$NXAPI_VERSION (actuel : ${cur:-aucun})"
+  npm install -g "nxapi@$NXAPI_VERSION"
 fi
 stow_pkg nxapi
 systemctl --user daemon-reload

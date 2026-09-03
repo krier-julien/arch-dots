@@ -18,8 +18,8 @@ load_config() {
   # shellcheck disable=SC1090
   source "$f"
   : "${DOTS_USER:?}" "${DOTS_HOSTNAME:?}" "${DOTS_TIMEZONE:?}" "${DOTS_LOCALE:?}" "${DOTS_KEYMAP:?}"
-  : "${CACHYOS_ARCH_LEVEL:=znver4}" "${DOTS_MONITOR:=HDMI-A-1}" "${DOTS_SDDM_THEME:=sddm-astronaut-theme}"
-  export DOTS_USER DOTS_HOSTNAME DOTS_TIMEZONE DOTS_LOCALE DOTS_KEYMAP CACHYOS_ARCH_LEVEL DOTS_MONITOR DOTS_SDDM_THEME
+  : "${CACHYOS_ARCH_LEVEL:=znver4}" "${DOTS_MONITOR:=HDMI-A-1}" "${DOTS_SDDM_THEME:=sddm-astronaut-theme}" "${NXAPI_VERSION:=1.6.1-next.254}"
+  export DOTS_USER DOTS_HOSTNAME DOTS_TIMEZONE DOTS_LOCALE DOTS_KEYMAP CACHYOS_ARCH_LEVEL DOTS_MONITOR DOTS_SDDM_THEME NXAPI_VERSION
 }
 
 need_root()  { [[ $EUID -eq 0 ]] || die "Ce script doit etre lance en root (sudo)."; }
