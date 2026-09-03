@@ -24,8 +24,15 @@ MANGOHUD_CONFIG=no_display gamemoderun mangohud %command%   # cap FPS sans HUD v
 gamemoderun mangohud gamescope -W 3840 -H 2160 -r 120 --hdr-enabled -f -- %command%   # HDR via gamescope
 ```
 
-Raccourcis MangoHUD en jeu : `Shift_R+F12` masque/affiche le HUD, `Shift_L+F1` cycle la limite
-117 / illimite / 60.
+Le HUD est **masque au lancement** (`no_display=1`) mais le cap a 117 FPS s'applique quand meme.
+Raccourcis en jeu :
+
+| Touches | Action |
+|---------|--------|
+| `Shift_L + \`` | afficher / masquer le HUD (layout complet : FPS, 1 % low, frametime, GPU, CPU, RAM, winesync) |
+| `Shift_L + F3` | cycler les presets : perso, FPS seul, ligne compacte, etendu, detaille |
+| `Shift_L + F1` | cycler la limite : 117, illimitee, 60 |
+| `Shift_L + F2` | demarrer / arreter l'enregistrement des frametimes |
 
 Dans le jeu : **V-Sync desactive** (le VRR + cap 117 s'en chargent), plein ecran exclusif ou
 sans bordure, 3840x2160.
