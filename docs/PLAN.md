@@ -23,7 +23,7 @@ Decisions prises :
 | 4 | udev Elgato 4K X, noeud audio stable + loopback PipeWire persistant, profil OBS NVENC | `scripts/40-media.sh`, `dots/media`, `templates/obs-profile`, `docs/40-media.md` | fait |
 | 5 | liquidctl : vitesses fixes pompe Kraken et hub Lian Li, services boot + resume | `scripts/50-hardware.sh`, `system/etc/liquidctl`, `docs/50-hardware.md` | fait |
 | 6 | brave-origin par defaut, Vesktop Wayland, Pear-desktop, Plezy, flags Electron | `scripts/60-apps.sh`, `dots/apps`, `docs/60-apps.md` | fait |
-| 7 | Service utilisateur nxapi (compte Nintendo secondaire), secrets hors repo | `scripts/70-services.sh`, `dots/nxapi` | a faire |
+| 7 | Service utilisateur nxapi (compte Nintendo secondaire), secrets hors repo | `scripts/70-services.sh`, `dots/nxapi`, `docs/70-services.md` | fait |
 | 8 | Checklist de validation | `docs/80-validation.md` | fait |
 
 ## Arborescence
