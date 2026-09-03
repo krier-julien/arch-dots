@@ -54,4 +54,6 @@ Si `x3d-mode` repond que le driver est indisponible : verifier dans le BIOS
   compatible avec paru et l'AUR. Pour un pacman vanilla, retirer `[cachyos]` de
   `/etc/pacman.conf` en gardant les tiers `znver4` et `cachyos-extra-znver4`.
 - Le noyau `linux` de secours n'a pas de module NVIDIA : il sert a la console de depannage.
+  Les modules sont declares optionnels (`nvidia?`) dans le drop-in mkinitcpio pour que la
+  generation de son initramfs n'echoue pas.
 - `nct6687d-dkms-git` se recompile a chaque mise a jour de noyau via DKMS (headers installes).
