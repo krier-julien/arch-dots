@@ -30,7 +30,22 @@ fi
 [[ -L "$CFG/caelestia/hypr-user.lua" ]] || warn "hypr-user.lua n'est plus un symlink vers le repo"
 
 # --- 4. Session : SDDM + uwsm, fish par defaut ----------------------------------------
-sudo rsync -a --backup --suffix=.bak --chown=root:root "$REPO_DIR/system/etc/sddm.conf.d" /etc/
+# Themes qylock (https://github.com/Darkkal44/qylock) : copie de tous les themes Qt6
+QYLOCK_SRC="$HOME/.local/src/qylock"
+if [[ -d "$QYLOCK_SRC/.git" ]]; then git -C "$QYLOCK_SRC" pull -q --ff-only || warn "qylock: pull impossible"
+else mkdir -p "$(dirname "$QYLOCK_SRC")"; git clone -q --depth 1 https://github.com/Darkkal44/qylock "$QYLOCK_SRC"; fi
+for t in "$QYLOCK_SRC"/themes/*/; do
+  name=$(basename "$t")
+  if [[ "$name" == clockwork ]]; then
+    for v in "$t"*/; do sudo rsync -a --delete "$v" "/usr/share/sddm/themes/clockwork-$(basename "$v")/"; done
+  else
+    sudo rsync -a --delete "$t" "/usr/share/sddm/themes/$name/"
+  fi
+done
+ok "Themes qylock installes dans /usr/share/sddm/themes (clockwork-orbital, pixel-night-city, ...)"
+[[ -d "/usr/share/sddm/themes/$DOTS_SDDM_THEME" ]] || warn "Theme SDDM '$DOTS_SDDM_THEME' introuvable dans /usr/share/sddm/themes"
+sudo mkdir -p /etc/sddm.conf.d
+sed "s|@@THEME@@|$DOTS_SDDM_THEME|" "$REPO_DIR/templates/sddm.conf" | sudo tee /etc/sddm.conf.d/zz-arch-dots.conf >/dev/null
 sudo systemctl enable sddm.service
 [[ "$(getent passwd "$USER" | cut -d: -f7)" == "$(command -v fish)" ]] || chsh -s "$(command -v fish)"
 

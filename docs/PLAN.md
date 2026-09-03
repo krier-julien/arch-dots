@@ -10,6 +10,7 @@ Decisions prises :
   tous pilotes par liquidctl >= 1.16.0 (driver `lianli_uni`). Vitesses **fixes** pour la
   pompe et les ventilateurs (decision utilisateur : le boitier est tres ventile), appliquees
   par un service systemd au boot. Pas de demon de courbes.
+- **Bureau** : workspaces fixes 1 Brave, 2 Discord, 3 Steam, 4 OBS, 5 YouTube Music, 6 Plezy, 7 jeux ; autostart des six premiers ; verrouillage a 15 min, jamais d'extinction d'ecran ni de veille ; themes SDDM astronaut ou qylock.
 - **Identite** : hostname `arch`, fuseau Europe/Luxembourg, clavier US, systeme en anglais
   avec formats europeens (en_GB) et monnaie EUR (de_LU).
 
@@ -18,7 +19,7 @@ Decisions prises :
 | 0 | Squelette du repo, listes de paquets, config archinstall, docs | - | fait |
 | 1 | Repos CachyOS, `linux-cachyos`, nvidia-open, parametres noyau, sched-ext (`scx_lavd`), zram, snapper, nct6687d, bascule V-Cache 7950X3D | `scripts/10-base.sh`, `docs/10-base.md` | fait |
 | 2 | Hyprland : moniteur 4K@120 scale 2, VRR plein ecran, tearing, env NVIDIA, Xwayland HiDPI, portails, SDDM, shell Caelestia | `scripts/20-hyprland.sh`, `dots/caelestia`, `dots/uwsm`, `docs/20-hyprland.md` | fait |
-| 3 | Steam (scaling UI + overlay), MangoHUD cap 117, gamemode + V-Cache, ProtonPlus | `scripts/30-gaming.sh`, `dots/gaming` | a faire |
+| 3 | Steam (scaling UI + overlay), MangoHUD cap 117, gamemode + V-Cache auto, ntsync, ProtonPlus | `scripts/30-gaming.sh`, `dots/gaming`, `docs/30-gaming.md` | fait |
 | 4 | udev Elgato 4K X, loopback PipeWire persistant, profil OBS NVENC | `scripts/40-media.sh`, `dots/pipewire`, `dots/obs` | a faire |
 | 5 | liquidctl : vitesses fixes pompe Kraken et hub Lian Li, service systemd | `scripts/50-hardware.sh`, `system/etc/liquidctl` | a faire |
 | 6 | brave-origin par defaut, Vesktop Wayland, Pear-desktop, Plezy | `scripts/60-apps.sh`, `dots/apps` | a faire |

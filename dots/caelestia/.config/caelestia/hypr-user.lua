@@ -59,20 +59,33 @@ hl.window_rule({ match = { class = "steam_app_[0-9]+" }, content = "game" })
 hl.window_rule({ match = { class = "gamescope" },        content = "game" })
 hl.window_rule({ match = { class = "steam_app_default" }, content = "game" })
 
--- Steam : la fenetre principale en tiled, les popups en flottant (deja gere par Caelestia)
--- Pear Desktop (YouTube Music) sur le workspace special musique
-hl.window_rule({ match = { class = "pear-desktop|com.github.th_ch.youtube_music" }, tag = "+music_player" })
-
--- OBS : opaque, jamais de blur ni d'opacite (apercu fidele)
+-- OBS et Plezy : opaques (apercu video fidele)
 hl.window_rule({ match = { class = "com.obsproject.Studio" }, opaque = true })
+hl.window_rule({ match = { class = "plezy|Plezy|dev.plezy.*" }, opaque = true })
 
--- Plezy : opaque (video)
-hl.window_rule({ match = { class = "plezy|Plezy" }, opaque = true })
+---------------------------------------------------------------------------
+-- Workspaces fixes + autostart (workspaces.lua) et automatisation jeu (gaming.lua)
+---------------------------------------------------------------------------
+require("workspaces").setup(monitor)
+require("gaming").setup()
+
+---------------------------------------------------------------------------
+-- TV eteinte pendant le verrouillage : quand la G3 disparait, Hyprland bascule sur une
+-- sortie headless de secours et rapplique la regle hl.monitor au retour ; les workspaces
+-- 1..7 sont lies a la TV (workspaces.lua) et misc.allow_session_lock_restore (Caelestia)
+-- restaure l'ecran de verrouillage. On journalise seulement.
+---------------------------------------------------------------------------
+hl.on("monitor.removed", function(m)
+    hl.exec_cmd("logger -t hyprland 'monitor removed: " .. tostring(m and m.name) .. "'")
+end)
+hl.on("monitor.added", function(m)
+    hl.exec_cmd("logger -t hyprland 'monitor added: " .. tostring(m and m.name) .. "'")
+end)
 
 ---------------------------------------------------------------------------
 -- Raccourcis complementaires
 ---------------------------------------------------------------------------
 hl.bind("SUPER + SHIFT + G", function()
-    -- bascule rapide du mode V-Cache (Phase 1) avec notification
+    -- bascule manuelle du mode V-Cache (l'automatique est dans gaming.lua)
     hl.exec_cmd([[sh -c 'm=$(x3d-mode); if [ "$m" = cache ]; then x3d-mode frequency; else x3d-mode cache; fi; notify-send "7950X3D" "amd_x3d_mode: $(x3d-mode)"']])
 end)

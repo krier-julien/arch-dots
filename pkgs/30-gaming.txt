@@ -1,4 +1,4 @@
-# Phase 3 : Steam, MangoHUD, gamemode, ProtonPlus (multilib requis)
+# Phase 3 : Steam, MangoHUD, gamemode, ProtonPlus (multilib active en phase 1)
 steam
 mangohud
 lib32-mangohud
@@ -7,7 +7,10 @@ lib32-gamemode
 gamescope
 protonplus
 umu-launcher
-lib32-mesa
 mesa
+lib32-mesa
 lib32-gnutls
 lib32-libpulse
+lib32-openal
+lib32-libva
+lib32-libva-nvidia-driver
