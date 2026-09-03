@@ -6,6 +6,7 @@ local ok, localcfg = pcall(require, "local")
 if not ok or type(localcfg) ~= "table" then localcfg = {} end
 local monitor = localcfg.monitor or "HDMI-A-1"
 local vm      = localcfg.vm == true   -- test en machine virtuelle : pas de NVIDIA, ecran generique
+local bitdepth = tonumber(localcfg.bitdepth) or 8  -- DOTS_BITDEPTH dans config.env (10 = SDR 10 bits)
 
 ---------------------------------------------------------------------------
 -- Ecran : 3840x2160@120, scale 2.0 (bureau 1920x1080 logique), VRR plein ecran
@@ -16,7 +17,7 @@ hl.monitor({
     position = "0x0",
     scale    = 2,
     vrr      = 2,          -- 0 off, 1 toujours, 2 plein ecran seulement, 3 plein ecran jeu/video
-    -- bitdepth = 10,      -- 10 bits : ok sur la G3 en HDMI 2.1, mais peut casser certains captures d'ecran
+    bitdepth = vm and 8 or bitdepth,  -- 10 bits SDR sur la G3 ; verifier currentFormat: XRGB2101010
     -- cm = "hdr",         -- HDR permanent ; par defaut render.cm_auto_hdr bascule seul en plein ecran
 })
 
