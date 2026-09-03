@@ -13,12 +13,14 @@ Elgato 4K X.
 ## Utilisation rapide
 
 ```bash
-git clone https://github.com/krier-julien/arch-dots ~/arch-dots
+git clone https://github.com/krier-julien/arch-dots ~/arch-dots   # -b <branche> si pas encore fusionne
 cd ~/arch-dots
 cp config.env.example config.env   # puis editer
 ./install.sh --list
-./install.sh                       # toutes les phases, idempotent
+./install.sh 10 && sudo reboot     # puis 20 && reboot, puis 30 40 50 60 70 depuis Hyprland
 ```
+
+Le deroule complet avec les redemarrages est dans `docs/00-install.md`.
 
 Les dotfiles sont geres avec GNU stow (`dots/`), les fichiers systeme sont dans `system/`
 et copies vers `/`. Aucun secret n'est versionne (voir `.gitignore`).
