@@ -13,7 +13,7 @@ local bitdepth = tonumber(localcfg.bitdepth) or 8  -- DOTS_BITDEPTH dans config.
 ---------------------------------------------------------------------------
 hl.monitor({
     output   = vm and "" or monitor,
-    mode     = vm and "preferred" or "3840x2160@120",
+    mode     = vm and "preferred" or "3840x2160@119.88",   -- mode exact annonce par la G3 (hyprctl monitors)
     position = "0x0",
     scale    = 2,
     vrr      = 2,          -- 0 off, 1 toujours, 2 plein ecran seulement, 3 plein ecran jeu/video
