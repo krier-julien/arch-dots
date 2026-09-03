@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+# Bascule le CCD prefere du 7950X3D via le driver amd_x3d_vcache (noyau >= 6.13).
+#   x3d-mode            -> affiche le mode courant
+#   x3d-mode cache      -> prefere le CCD avec 3D V-Cache (jeu)
+#   x3d-mode frequency  -> prefere le CCD haute frequence (bureau, compilation)
+# Prerequis BIOS : CPPC Dynamic Preferred Cores = Driver.
+set -euo pipefail
+node=$(ls -d /sys/bus/platform/drivers/amd_x3d_vcache/AMDI0101:*/amd_x3d_mode 2>/dev/null | head -1 || true)
+[[ -n "$node" ]] || { echo "amd_x3d_vcache indisponible (noyau < 6.13 ou BIOS CPPC Preferred Cores != Driver)" >&2; exit 1; }
+case "${1:-}" in
+  "") cat "$node" ;;
+  cache|frequency)
+    [[ $EUID -eq 0 ]] || exec sudo -n "$0" "$1"
+    echo "$1" > "$node"; echo "amd_x3d_mode=$(cat "$node")" ;;
+  *) echo "usage: x3d-mode [cache|frequency]" >&2; exit 2 ;;
+esac

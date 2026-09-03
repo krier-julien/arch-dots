@@ -47,15 +47,15 @@
       }
     ]
   },
-  "hostname": "obsidian",
+  "hostname": "arch",
   "kernels": ["linux"],
   "locale_config": {
-    "kb_layout": "fr",
+    "kb_layout": "us",
     "sys_enc": "UTF-8",
-    "sys_lang": "fr_FR.UTF-8"
+    "sys_lang": "en_US.UTF-8"
   },
   "mirror_config": {
-    "mirror_regions": { "France": [] },
+    "mirror_regions": { "Germany": [], "France": [] },
     "custom_mirrors": []
   },
   "network_config": { "type": "nm" },
@@ -67,6 +67,6 @@
   "profile_config": null,
   "services": ["NetworkManager", "sshd"],
   "swap": false,
-  "timezone": "Europe/Paris",
+  "timezone": "Europe/Luxembourg",
   "version": "3.0.x"
 }

@@ -25,7 +25,7 @@ de toute facon apres le premier boot, par `install.sh`.
 Sur le live ISO :
 
 ```bash
-loadkeys fr
+loadkeys us
 pacman -Sy archinstall git
 git clone https://github.com/krier-julien/arch-dots /tmp/arch-dots
 cp /tmp/arch-dots/archinstall/user_credentials.json.example /tmp/creds.json

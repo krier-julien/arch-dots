@@ -25,7 +25,6 @@ btrfs-progs
 snapper
 snap-pac
 limine
-limine-snapper-sync
 networkmanager
 bluez
 bluez-utils
