@@ -77,8 +77,8 @@ sudo sed -i -e "s/^default_entry: .*/default_entry: ${DOTS_LIMINE_DEFAULT_ENTRY}
             -e "s/^timeout: .*/timeout: ${DOTS_LIMINE_TIMEOUT}/" /boot/limine.conf
 sudo limine-update
 sudo grep -q '^/+' /boot/limine.conf || die "limine-update n'a genere aucune entree dans /boot/limine.conf"
-info "Limine : $(sudo grep -c '^/+' /boot/limine.conf) groupe(s), $(sudo grep -c '^//' /boot/limine.conf) noyau(x) :"
-sudo grep -E '^/{1,2}' /boot/limine.conf | sed 's/^/    /' 
+info "Limine : $(sudo grep -c '^/+' /boot/limine.conf) groupe(s), $(sudo grep -cE '^\s*//' /boot/limine.conf) noyau(x) :"
+sudo grep -E '^\s*/' /boot/limine.conf | sed 's/^/    /' 
 
 # --- 5b. Second NVMe dans le Btrfs racine (optionnel, DOTS_BTRFS_EXTRA_DEVICE) ---------
 if [[ -n "$DOTS_BTRFS_EXTRA_DEVICE" ]]; then

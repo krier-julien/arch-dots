@@ -6,6 +6,11 @@ need_user
 CFG="${XDG_CONFIG_HOME:-$HOME/.config}"
 
 # --- 1. Paquets (Hyprland, portails, SDDM, CLI/shell Caelestia) -----------------------
+# Caelestia exige quickshell-git (pragmas recents) : retirer la version taguee si presente
+if pacman -Qq quickshell >/dev/null 2>&1; then
+  info "Remplacement de quickshell par quickshell-git (requis par caelestia-shell)"
+  sudo pacman -Rdd --noconfirm quickshell
+fi
 install_pkgs "$REPO_DIR/pkgs/20-hyprland.txt"
 
 # --- 2. Nos overrides d'abord : Caelestia ne touche jamais ~/.config/caelestia/* ------
