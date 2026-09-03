@@ -1,0 +1,17 @@
+{
+    "theme": {
+        "enableTerm": true,
+        "enableHypr": true,
+        "enableDiscord": true,
+        "enableSpicetify": false,
+        "enableFuzzel": true,
+        "enableBtop": true,
+        "enableNvtop": true,
+        "enableGtk": true,
+        "enableQt": true,
+        "enableChromium": false,
+        "enableZed": false,
+        "enableCava": true,
+        "iconTheme": "Papirus-Dark"
+    }
+}

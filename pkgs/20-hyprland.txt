@@ -1,12 +1,9 @@
-# Phase 2 : Hyprland, portails, rice Caelestia (Quickshell), fontes, greeter
+# Phase 2 : Hyprland, portails, SDDM, rice Caelestia.
+# `caelestia install` installe lui-meme les dependances de ses composants (foot, fish,
+# starship, thunar, quickshell, fontes du shell, gtk/qt theming, polkit, keyring...).
+# Cette liste ne contient que ce que Caelestia ne gere pas.
 hyprland
 uwsm
-hyprlock
-hypridle
-hyprpaper
-hyprpicker
-hyprpolkitagent
-hyprsunset
 xdg-desktop-portal-hyprland
 xdg-desktop-portal-gtk
 xorg-xwayland
@@ -14,33 +11,15 @@ qt5-wayland
 qt6-wayland
 sddm
 sddm-astronaut-theme
-quickshell
-caelestia-shell
 caelestia-cli
-app2unit
-foot
-kitty
-nautilus
-wl-clipboard
-cliphist
-grim
-slurp
-satty
-brightnessctl
+caelestia-shell
+hyprpicker
+gvfs
+tumbler
 playerctl
-pwvucontrol
-pavucontrol
-cava
-nwg-look
-qt6ct
-kvantum
-adw-gtk-theme
-papirus-icon-theme
 bibata-cursor-theme
-ttf-jetbrains-mono-nerd
-ttf-material-symbols-variable-git
-ttf-rubik-vf
 noto-fonts
 noto-fonts-cjk
 noto-fonts-emoji
 inter-font
+ttf-jetbrains-mono-nerd

@@ -54,7 +54,7 @@ stow_pkg() {
   local pkg="$1"
   [[ -d "$REPO_DIR/dots/$pkg" ]] || { warn "dots/$pkg absent, ignore"; return; }
   info "stow $pkg"
-  stow --dir="$REPO_DIR/dots" --target="$HOME" --restow "$pkg"
+  stow --no-folding --dir="$REPO_DIR/dots" --target="$HOME" --restow "$pkg"
 }
 
 # Active une unite systemd (system ou --user) sans echouer si deja active.

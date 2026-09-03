@@ -17,7 +17,7 @@ Decisions prises :
 |-------|---------|--------|------|
 | 0 | Squelette du repo, listes de paquets, config archinstall, docs | - | fait |
 | 1 | Repos CachyOS, `linux-cachyos`, nvidia-open, parametres noyau, sched-ext (`scx_lavd`), zram, snapper, nct6687d, bascule V-Cache 7950X3D | `scripts/10-base.sh`, `docs/10-base.md` | fait |
-| 2 | Hyprland : moniteur 4K@120 scale 2, VRR plein ecran, tearing, env NVIDIA, Xwayland HiDPI, portails, SDDM, shell Caelestia | `scripts/20-hyprland.sh`, `dots/hypr`, `dots/caelestia` | a faire |
+| 2 | Hyprland : moniteur 4K@120 scale 2, VRR plein ecran, tearing, env NVIDIA, Xwayland HiDPI, portails, SDDM, shell Caelestia | `scripts/20-hyprland.sh`, `dots/caelestia`, `dots/uwsm`, `docs/20-hyprland.md` | fait |
 | 3 | Steam (scaling UI + overlay), MangoHUD cap 117, gamemode + V-Cache, ProtonPlus | `scripts/30-gaming.sh`, `dots/gaming` | a faire |
 | 4 | udev Elgato 4K X, loopback PipeWire persistant, profil OBS NVENC | `scripts/40-media.sh`, `dots/pipewire`, `dots/obs` | a faire |
 | 5 | liquidctl : vitesses fixes pompe Kraken et hub Lian Li, service systemd | `scripts/50-hardware.sh`, `system/etc/liquidctl` | a faire |
