@@ -8,8 +8,8 @@ Script : `scripts/10-base.sh` (`./install.sh 10`). Redemarrer ensuite.
 |-------|-------|----------|
 | Repos | CachyOS tier **znver4** via `cachyos-repo.sh` | Paquets compiles pour Zen 4 (AVX-512), detection automatique du CPU |
 | Noyau | `linux-cachyos` (BORE + sched-ext), `linux` conserve en secours | Rollback simple si une version CachyOS pose probleme |
-| NVIDIA | `linux-cachyos-nvidia-open` + `nvidia-utils`, modules charges dans l'initramfs | Modules open = choix NVIDIA pour Ada, HDMI 2.1 4K120 VRR gere par le firmware GSP |
-| Scheduler | `scx_lavd` via `scx_loader.service` (`/etc/scx_loader.toml`), ou `scx.service` (`/etc/default/scx`) sur les anciens paquets | Conscient des 2 CCD heterogenes du 7950X3D, faible latence |
+| NVIDIA | `linux-cachyos-nvidia-open` + `nvidia-utils` ; KMS precoce optionnel (`DOTS_NVIDIA_EARLY_KMS`, defaut 0) | Modules open = choix NVIDIA pour Ada, HDMI 2.1 4K120 VRR gere par le firmware GSP |
+| Scheduler | `scx_lavd --autopilot` via notre `scx.service` (le paquet `scx-scheds` ne fournit plus d'unite), config `/etc/default/scx` | Conscient des 2 CCD heterogenes du 7950X3D, faible latence |
 | V-Cache | `/usr/local/bin/x3d-mode cache|frequency` (sudo sans mot de passe pour wheel) | gamemode basculera en `cache` au lancement d'un jeu (Phase 3) |
 | Priorites | `ananicy-cpp` + regles CachyOS | Nice/ionice automatiques pour jeux, compilateurs, navigateurs |
 | Memoire | zram 16 Go zstd, `zswap` desactive | 64 Go de RAM : pas de swap disque |
@@ -36,7 +36,7 @@ uname -r                                  # ...-cachyos
 cat /proc/cmdline                         # parametres ci-dessus + root=
 nvidia-smi                                # driver open charge
 cat /sys/module/nvidia_drm/parameters/modeset   # Y
-systemctl status scx_loader  # ou scx.service selon la version du paquet scx-scheds
+systemctl status scx                      # scx_lavd actif
 cat /sys/kernel/sched_ext/root/ops        # lavd
 x3d-mode                                  # frequency (defaut) ; x3d-mode cache pour tester
 sensors                                   # k10temp + nct6687 + nvme
@@ -47,6 +47,21 @@ sudo limine-update --dry-run 2>/dev/null || cat /boot/limine.conf
 
 Si `x3d-mode` repond que le driver est indisponible : verifier dans le BIOS
 `CPPC Dynamic Preferred Cores = Driver`.
+
+## Taille de l'ESP et snapshots bootables
+
+`limine-snapper-sync` copie noyau + initramfs de chaque snapshot sur l'ESP (1 GiB). Avec les
+modules NVIDIA dans l'initramfs (~180 MiB par noyau), une entree coute ~370 MiB et la
+synchronisation s'arrete (« will exceed the 85% limit »). D'ou `DOTS_NVIDIA_EARLY_KMS=0` par
+defaut et `MAX_SNAPSHOT_ENTRIES=3`. Verifier : `df -h /boot`, `ls -lh /boot/*.img`.
+
+## Entree Limine par defaut
+
+Limine numerote les lignes du menu dans l'ordre du fichier : `1` = groupe `/+Arch Linux`,
+`2` = son premier noyau, `3` = le deuxieme. `DOTS_LIMINE_DEFAULT_ENTRY` (defaut 2) et
+`DOTS_LIMINE_TIMEOUT` sont appliques a chaque `./install.sh 10`. Verifier l'ordre avec
+`sudo grep -E '^\s*/' /boot/limine.conf` : si `linux-cachyos` n'est pas le premier du groupe,
+mettre 3.
 
 ## Notes
 

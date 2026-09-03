@@ -1,4 +1,0 @@
-# scx_loader (paquet scx-scheds recent) : scheduler sched-ext lance au boot.
-# Modes : Auto, Gaming, PowerSave, LowLatency, Server. Changer a chaud : scxctl switch --sched scx_lavd --mode gaming
-default_sched = "scx_lavd"
-default_mode = "Auto"

@@ -9,7 +9,7 @@ M.apps = {
     discord = { class = "discord|vesktop|equibop",                        ws = "2", cmd = "vesktop" },
     steam   = { class = "steam",                                          ws = "3", cmd = "steam" },
     obs     = { class = "com.obsproject.Studio",                          ws = "4", cmd = "obs" },
-    music   = { class = "com.github.th-ch.youtube-music|pear-desktop",    ws = "5", cmd = "pear-desktop" },
+    music   = { class = "com.github.th-ch.youtube-music|pear-desktop",    ws = "5", cmd = "youtube-music" },   -- binaire fourni par pear-desktop-bin
     plex    = { class = "com.edde746.plezy",                              ws = "6", cmd = "plezy" },
 }
 -- Jeux : voir gaming.lua (workspace 7)

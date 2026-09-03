@@ -29,6 +29,9 @@ sudo rsync -a --backup --suffix=.bak --chown=root:root "$REPO_DIR/system/" /
 if [[ "$DOTS_VM" == 1 ]]; then
   info "Mode VM : retrait des fichiers NVIDIA / nct6687"
   sudo rm -f /etc/modprobe.d/nvidia.conf /etc/mkinitcpio.conf.d/nvidia.conf /etc/modules-load.d/nct6687.conf
+elif [[ "$DOTS_NVIDIA_EARLY_KMS" != 1 ]]; then
+  # Pas de modules NVIDIA dans l'initramfs (taille /6, snapshots bootables possibles sur l'ESP)
+  sudo rm -f /etc/mkinitcpio.conf.d/nvidia.conf
 fi
 sudo chmod 0440 /etc/sudoers.d/10-x3d-mode
 sudo chmod 0755 /usr/local/bin/x3d-mode
@@ -69,32 +72,51 @@ if ! sudo grep -q '^### Entete Limine gere par arch-dots' /boot/limine.conf 2>/d
   sudo cp "$REPO_DIR/templates/limine.conf" /boot/limine.conf
 fi
 # limine-mkinitcpio-hook lit /etc/default/limine a l'installation : l'ordre compte.
-# limine-snapper-sync peut demander "run limine-mkinitcpio now?" : on repond oui
-yes | sudo pacman -S --needed --noconfirm limine-mkinitcpio-hook limine-snapper-sync
+# limine-snapper-sync peut demander "run limine-mkinitcpio now?" : on repond oui.
+# (yes || true) : yes meurt en SIGPIPE quand pacman se termine, ce qui ferait echouer le script sous pipefail.
+if ! pacman -Qq limine-mkinitcpio-hook limine-snapper-sync >/dev/null 2>&1; then
+  (yes 2>/dev/null || true) | sudo pacman -S --needed --noconfirm limine-mkinitcpio-hook limine-snapper-sync
+fi
 sudo mkinitcpio -P || warn "mkinitcpio a signale des erreurs : verifier la sortie ci-dessus (images normalement generees)"
+# Entree par defaut et delai : mis a jour a chaque passage (l'entete n'est copie qu'une fois)
+sudo sed -i -e "s/^default_entry: .*/default_entry: ${DOTS_LIMINE_DEFAULT_ENTRY}/" \
+            -e "s/^timeout: .*/timeout: ${DOTS_LIMINE_TIMEOUT}/" /boot/limine.conf
 sudo limine-update
 sudo grep -q '^/+' /boot/limine.conf || die "limine-update n'a genere aucune entree dans /boot/limine.conf"
-info "Limine : $(sudo grep -c '^/+' /boot/limine.conf) groupe(s), $(sudo grep -c '^//' /boot/limine.conf) noyau(x) :"
-sudo grep -E '^/{1,2}' /boot/limine.conf | sed 's/^/    /' 
+info "Limine : $(sudo grep -c '^/+' /boot/limine.conf) groupe(s), $(sudo grep -cE '^\s*//' /boot/limine.conf) noyau(x) :"
+sudo grep -E '^\s*/' /boot/limine.conf | sed 's/^/    /' 
 
 # --- 5b. Second NVMe dans le Btrfs racine (optionnel, DOTS_BTRFS_EXTRA_DEVICE) ---------
 if [[ -n "$DOTS_BTRFS_EXTRA_DEVICE" ]]; then
   dev="$DOTS_BTRFS_EXTRA_DEVICE"
   [[ -b "$dev" ]] || die "$dev n'est pas un peripherique bloc"
-  if sudo btrfs filesystem show / | grep -q "path $dev\b"; then
-    ok "$dev fait deja partie du Btrfs racine"
+  root_uuid=$(findmnt -no UUID /)
+  dev_uuid=$(lsblk -no UUID "$dev" | head -1)
+  dev_fs=$(lsblk -no FSTYPE "$dev" | head -1)
+  rootdev=$(findmnt -no SOURCE / | sed 's/\[.*//')
+  [[ "$dev" != "$rootdev" ]] || die "$dev est deja le disque racine"
+  # Garde-fous : jamais un disque qui porte une partition montee (systeme, ESP...) ni le parent de la racine
+  if [[ -n "$(lsblk -no MOUNTPOINTS "$dev" | tr -d ' \n')" ]]; then
+    die "$dev contient des partitions montees ($(lsblk -no NAME,MOUNTPOINTS "$dev" | tr -s ' \n' ' ')) : ce n'est pas un disque a ajouter. Verifier lsblk."
+  fi
+  root_parent=$(lsblk -no PKNAME "$rootdev" 2>/dev/null | head -1)
+  [[ -n "$root_parent" && "$dev" == "/dev/$root_parent" ]] && die "$dev est le disque qui porte la racine ($rootdev)"
+  if [[ "$dev_fs" == btrfs && "$dev_uuid" == "$root_uuid" ]]; then
+    ok "$dev fait deja partie du Btrfs racine (UUID $root_uuid)"
   else
-    rootdev=$(findmnt -no SOURCE / | sed 's/\[.*//')
-    [[ "$dev" != "$rootdev" ]] || die "$dev est deja le disque racine"
     if [[ -n "$(lsblk -no FSTYPE,PARTTYPE "$dev" | tr -d ' \n')" ]]; then
-      [[ "$DOTS_BTRFS_WIPE" == 1 ]] || die "$dev contient des donnees ($(lsblk -no FSTYPE "$dev" | head -1)). Mettre DOTS_BTRFS_WIPE=1 pour l'effacer."
+      [[ "$DOTS_BTRFS_WIPE" == 1 ]] || die "$dev contient des donnees (${dev_fs:-table de partitions}). Mettre DOTS_BTRFS_WIPE=1 pour l'effacer."
       warn "Effacement de $dev dans 10 s (Ctrl+C pour annuler)"; sleep 10
       sudo wipefs -a "$dev"
     fi
-    info "Ajout de $dev au Btrfs racine, puis equilibrage data=single / metadata=raid1"
+    info "Ajout de $dev au Btrfs racine"
     sudo btrfs device add -f "$dev" /
-    sudo btrfs balance start -dconvert=single -mconvert=raid1 /
     sudo mkinitcpio -P || warn "mkinitcpio a signale des erreurs"   # hook btrfs : scan multi-disques au boot
+  fi
+  # Profils attendus sur un volume multi-disques : data single (capacites additionnees), metadata raid1
+  if ! sudo btrfs filesystem df / | grep -q '^Metadata, RAID1'; then
+    info "Equilibrage : data=single, metadata=raid1 (peut prendre quelques minutes)"
+    sudo btrfs balance start -dconvert=single -mconvert=raid1 -sconvert=raid1 -f /
   fi
   sudo btrfs filesystem show /; sudo btrfs filesystem df /
 fi
@@ -119,16 +141,9 @@ sudo btrfs quota disable / 2>/dev/null || true   # les qgroups coutent cher en p
 # --- 7. Services ----------------------------------------------------------------------
 sudo systemctl daemon-reload
 units=(NetworkManager bluetooth fstrim.timer systemd-timesyncd ananicy-cpp snapper-cleanup.timer limine-snapper-sync)
-# sched-ext : le paquet scx-scheds fournit soit scx_loader.service (recent, config /etc/scx_loader.toml),
-# soit scx.service (config /etc/default/scx). On active celui qui existe.
-if systemctl list-unit-files scx_loader.service >/dev/null 2>&1 && systemctl list-unit-files | grep -q '^scx_loader.service'; then
-  units+=(scx_loader)
-elif systemctl list-unit-files | grep -q '^scx.service'; then
-  units+=(scx)
-else
-  warn "Aucune unite scx trouvee (pacman -Ql scx-scheds | grep -E 'service|toml')"
-fi
-[[ "$DOTS_VM" == 1 ]] || units+=(nvidia-suspend nvidia-hibernate nvidia-resume)
+# sched-ext : scx-scheds ne fournit plus d'unite systemd ; la notre (system/etc/systemd/system/scx.service)
+# lit /etc/default/scx. Si une future version du paquet reintroduit scx_loader.service, on le prefere.
+if systemctl list-unit-files 2>/dev/null | grep -q '^scx_loader.service'; then units+=(scx_loader); else units+=(scx); fi
 for u in "${units[@]}"; do
   sudo systemctl enable --now "$u" 2>/dev/null || sudo systemctl enable "$u" || warn "unite $u absente"
 done

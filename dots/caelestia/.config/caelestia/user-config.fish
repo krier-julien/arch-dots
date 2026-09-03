@@ -1,4 +1,5 @@
 # Config fish personnelle, sourcee par ~/.config/fish/config.fish (Caelestia)
+fish_add_path --global ~/.local/bin   # nxapi (npm --prefix ~/.local) et autres outils utilisateur
 set -gx EDITOR micro
 set -gx BROWSER brave-origin
 
