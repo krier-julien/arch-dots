@@ -79,8 +79,8 @@ if ! pacman -Qq limine-mkinitcpio-hook limine-snapper-sync >/dev/null 2>&1; then
 fi
 sudo mkinitcpio -P || warn "mkinitcpio a signale des erreurs : verifier la sortie ci-dessus (images normalement generees)"
 # Entree par defaut et delai : mis a jour a chaque passage (l'entete n'est copie qu'une fois)
-sudo sed -i -e "s/^default_entry: .*/default_entry: ${DOTS_LIMINE_DEFAULT_ENTRY}/" \
-            -e "s/^timeout: .*/timeout: ${DOTS_LIMINE_TIMEOUT}/" /boot/limine.conf
+sudo sed -i -e "s|^default_entry: .*|default_entry: ${DOTS_LIMINE_DEFAULT_ENTRY}|" \
+            -e "s|^timeout: .*|timeout: ${DOTS_LIMINE_TIMEOUT}|" /boot/limine.conf
 sudo limine-update
 sudo grep -q '^/+' /boot/limine.conf || die "limine-update n'a genere aucune entree dans /boot/limine.conf"
 info "Limine : $(sudo grep -c '^/+' /boot/limine.conf) groupe(s), $(sudo grep -cE '^\s*//' /boot/limine.conf) noyau(x) :"

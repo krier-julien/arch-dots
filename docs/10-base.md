@@ -57,11 +57,12 @@ defaut et `MAX_SNAPSHOT_ENTRIES=3`. Verifier : `df -h /boot`, `ls -lh /boot/*.im
 
 ## Entree Limine par defaut
 
-Limine numerote les lignes du menu dans l'ordre du fichier : `1` = groupe `/+Arch Linux`,
-`2` = son premier noyau, `3` = le deuxieme. `DOTS_LIMINE_DEFAULT_ENTRY` (defaut 2) et
-`DOTS_LIMINE_TIMEOUT` sont appliques a chaque `./install.sh 10`. Verifier l'ordre avec
-`sudo grep -E '^\s*/' /boot/limine.conf` : si `linux-cachyos` n'est pas le premier du groupe,
-mettre 3.
+`DOTS_LIMINE_DEFAULT_ENTRY` (defaut `Arch Linux/linux-cachyos`, chemin Groupe/Entree accepte par
+Limine >= 9) et `DOTS_LIMINE_TIMEOUT` sont appliques a chaque `./install.sh 10`. Noms visibles
+avec `sudo grep -E '^\s*/' /boot/limine.conf`. Si le menu attend sans compte a rebours, verifier
+qu'aucune variable EFI `LoaderConfigTimeout` ne force l'affichage :
+`efivar -l | grep -i LoaderConfigTimeout` (la supprimer avec `efivar -n <nom> -w` ou via
+`systemctl reboot --boot-loader-menu=0` une fois).
 
 ## Notes
 
