@@ -62,17 +62,18 @@ ok "/etc/default/limine ecrit (root: $ROOT_ARGS)"
 
 # Un seul limine.conf, a /boot/limine.conf, avec notre entete ; limine-update ajoute les entrees.
 for c in /boot/EFI/arch-limine/limine.conf /boot/EFI/BOOT/limine.conf /boot/EFI/limine/limine.conf /boot/limine/limine.conf; do
-  [[ -f "$c" ]] && { info "Deplacement $c -> /boot/limine.conf"; sudo mv -f "$c" /boot/limine.conf; }
+  sudo test -f "$c" && { info "Deplacement $c -> /boot/limine.conf"; sudo mv -f "$c" /boot/limine.conf; }
 done
-if ! grep -q '^### Entete Limine gere par arch-dots' /boot/limine.conf 2>/dev/null; then
-  [[ -f /boot/limine.conf ]] && sudo cp /boot/limine.conf /boot/limine.conf.archinstall.bak
+if ! sudo grep -q '^### Entete Limine gere par arch-dots' /boot/limine.conf 2>/dev/null; then
+  sudo test -f /boot/limine.conf && sudo cp /boot/limine.conf /boot/limine.conf.archinstall.bak
   sudo cp "$REPO_DIR/templates/limine.conf" /boot/limine.conf
 fi
 # limine-mkinitcpio-hook lit /etc/default/limine a l'installation : l'ordre compte.
 sudo pacman -S --needed --noconfirm limine-mkinitcpio-hook limine-snapper-sync
 sudo mkinitcpio -P || warn "mkinitcpio a signale des erreurs : verifier la sortie ci-dessus (images normalement generees)"
 sudo limine-update
-grep -q '^/+' /boot/limine.conf || die "limine-update n'a genere aucune entree dans /boot/limine.conf"
+sudo grep -q '^/+' /boot/limine.conf || die "limine-update n'a genere aucune entree dans /boot/limine.conf"
+info "Entrees Limine : $(sudo grep -c '^/+' /boot/limine.conf)"
 
 # --- 5b. Second NVMe dans le Btrfs racine (optionnel, DOTS_BTRFS_EXTRA_DEVICE) ---------
 if [[ -n "$DOTS_BTRFS_EXTRA_DEVICE" ]]; then
