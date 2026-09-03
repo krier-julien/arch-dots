@@ -6,10 +6,17 @@ need_user
 CFG="${XDG_CONFIG_HOME:-$HOME/.config}"
 
 # --- 1. Paquets (Hyprland, portails, SDDM, CLI/shell Caelestia) -----------------------
-# Caelestia exige quickshell-git (pragmas recents) : retirer la version taguee si presente
-if pacman -Qq quickshell >/dev/null 2>&1; then
-  info "Remplacement de quickshell par quickshell-git (requis par caelestia-shell)"
-  sudo pacman -Rdd --noconfirm quickshell
+# Caelestia exige quickshell-git compile depuis l'AUR (pragmas recents). `pacman -Qq quickshell`
+# renvoie le vrai nom du paquet qui fournit quickshell (quickshell, quickshell-git du depot CachyOS...).
+qs_pkg=$(pacman -Qq quickshell 2>/dev/null || true)
+qs_packager=$(pacman -Qi "${qs_pkg:-quickshell-git}" 2>/dev/null | awk -F': *' '/^Packager/{print $2}')
+if [[ -n "$qs_pkg" && "$qs_pkg" != quickshell-git ]]; then
+  info "Remplacement de $qs_pkg par quickshell-git (AUR)"
+  sudo pacman -Rdd --noconfirm "$qs_pkg"
+  paru -S --aur --noconfirm quickshell-git
+elif [[ "$qs_pkg" == quickshell-git && "$qs_packager" != *"Unknown Packager"* ]]; then
+  info "quickshell-git vient d'un depot binaire ($qs_packager) : recompilation depuis l'AUR pour etre a jour"
+  paru -S --aur --rebuild --noconfirm quickshell-git
 fi
 install_pkgs "$REPO_DIR/pkgs/20-hyprland.txt"
 
