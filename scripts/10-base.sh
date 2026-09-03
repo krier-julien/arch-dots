@@ -70,7 +70,7 @@ if ! grep -q '^### Entete Limine gere par arch-dots' /boot/limine.conf 2>/dev/nu
 fi
 # limine-mkinitcpio-hook lit /etc/default/limine a l'installation : l'ordre compte.
 sudo pacman -S --needed --noconfirm limine-mkinitcpio-hook limine-snapper-sync
-sudo mkinitcpio -P
+sudo mkinitcpio -P || warn "mkinitcpio a signale des erreurs : verifier la sortie ci-dessus (images normalement generees)"
 sudo limine-update
 grep -q '^/+' /boot/limine.conf || die "limine-update n'a genere aucune entree dans /boot/limine.conf"
 
@@ -91,7 +91,7 @@ if [[ -n "$DOTS_BTRFS_EXTRA_DEVICE" ]]; then
     info "Ajout de $dev au Btrfs racine, puis equilibrage data=single / metadata=raid1"
     sudo btrfs device add -f "$dev" /
     sudo btrfs balance start -dconvert=single -mconvert=raid1 /
-    sudo mkinitcpio -P    # hook btrfs (system/etc/mkinitcpio.conf.d/btrfs.conf) : scan multi-disques au boot
+    sudo mkinitcpio -P || warn "mkinitcpio a signale des erreurs"   # hook btrfs : scan multi-disques au boot
   fi
   sudo btrfs filesystem show /; sudo btrfs filesystem df /
 fi
