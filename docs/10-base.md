@@ -9,7 +9,7 @@ Script : `scripts/10-base.sh` (`./install.sh 10`). Redemarrer ensuite.
 | Repos | CachyOS tier **znver4** via `cachyos-repo.sh` | Paquets compiles pour Zen 4 (AVX-512), detection automatique du CPU |
 | Noyau | `linux-cachyos` (BORE + sched-ext), `linux` conserve en secours | Rollback simple si une version CachyOS pose probleme |
 | NVIDIA | `linux-cachyos-nvidia-open` + `nvidia-utils`, modules charges dans l'initramfs | Modules open = choix NVIDIA pour Ada, HDMI 2.1 4K120 VRR gere par le firmware GSP |
-| Scheduler | `scx_lavd --autopilot` via `scx.service` | Conscient des 2 CCD heterogenes du 7950X3D, faible latence |
+| Scheduler | `scx_lavd` via `scx_loader.service` (`/etc/scx_loader.toml`), ou `scx.service` (`/etc/default/scx`) sur les anciens paquets | Conscient des 2 CCD heterogenes du 7950X3D, faible latence |
 | V-Cache | `/usr/local/bin/x3d-mode cache|frequency` (sudo sans mot de passe pour wheel) | gamemode basculera en `cache` au lancement d'un jeu (Phase 3) |
 | Priorites | `ananicy-cpp` + regles CachyOS | Nice/ionice automatiques pour jeux, compilateurs, navigateurs |
 | Memoire | zram 16 Go zstd, `zswap` desactive | 64 Go de RAM : pas de swap disque |
@@ -36,7 +36,7 @@ uname -r                                  # ...-cachyos
 cat /proc/cmdline                         # parametres ci-dessus + root=
 nvidia-smi                                # driver open charge
 cat /sys/module/nvidia_drm/parameters/modeset   # Y
-systemctl status scx                      # scx_lavd actif
+systemctl status scx_loader  # ou scx.service selon la version du paquet scx-scheds
 cat /sys/kernel/sched_ext/root/ops        # lavd
 x3d-mode                                  # frequency (defaut) ; x3d-mode cache pour tester
 sensors                                   # k10temp + nct6687 + nvme
