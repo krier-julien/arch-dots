@@ -116,7 +116,56 @@ Chaque phase est idempotente : relancer `install.sh` (sans argument, ou avec des
 apres un `git pull` applique seulement ce qui a change. Une phase qui echoue s'arrete a
 l'etape fautive ; corriger puis relancer la meme phase.
 
-## 4. Rollback
+## 4. Deux NVMe (SN850X 1 To + 2 To) dans un seul Btrfs (~3 To)
+
+archinstall ne cree pas de Btrfs multi-disques, mais Btrfs s'etend a chaud. Marche a suivre :
+
+1. Installer avec archinstall sur le **1 To** (`device` = son chemin, verifier avec
+   `lsblk -o NAME,SIZE,MODEL`). L'ESP et le Btrfs racine y vivent.
+2. Au premier boot, dans `config.env` : `DOTS_BTRFS_EXTRA_DEVICE="/dev/nvme1n1"` (le 2 To)
+   et `DOTS_BTRFS_WIPE=1` s'il contient encore quelque chose.
+3. `./install.sh 10` ajoute le disque au Btrfs racine et lance un equilibrage
+   `data=single, metadata=raid1`, puis regenere l'initramfs avec le hook `btrfs`.
+
+Resultat : un seul systeme de fichiers d'environ 2,7 Tio utilisables (`btrfs filesystem df /`),
+tous les sous-volumes, snapshots et le rollback Limine continuent de fonctionner. Les
+metadonnees sont dupliquees sur les deux disques ; les donnees ne le sont pas (c'est ce qui
+additionne les capacites) : **la perte d'un NVMe rend l'ensemble inutilisable**, comme un
+RAID 0. Sauvegarder ce qui compte ailleurs (Steam se retelecharge).
+
+Alternative si tu preferes isoler : garder le 2 To en Btrfs separe monte sur
+`/home/<user>/Games` (bibliotheque Steam). Dans ce cas laisser `DOTS_BTRFS_EXTRA_DEVICE`
+vide et monter le disque a la main via `/etc/fstab`.
+
+Les deux disques ont le meme UUID Btrfs ; `/etc/fstab` n'a pas besoin de changer.
+
+## 5. Tester en machine virtuelle
+
+Oui, avec `DOTS_VM=1` dans `config.env` : les pilotes NVIDIA, le module de capteurs, les
+parametres noyau NVIDIA et l'environnement `__GLX_VENDOR_LIBRARY_NAME` sont sautes, et
+Hyprland utilise l'ecran virtuel en mode `preferred`.
+
+VM recommandee (virt-manager / QEMU-KVM) :
+
+| Reglage | Valeur |
+|---------|--------|
+| Firmware | UEFI (OVMF, `x86_64 OVMF_CODE_4M.fd`, sans Secure Boot) |
+| Chipset | Q35 |
+| CPU | `host-passthrough`, 8 vCPU (le script CachyOS detecte alors znver4 comme sur l'hote) |
+| RAM | 8 Go ou plus |
+| Disques | 2 disques virtio (ex. 40 Go + 40 Go) pour tester l'ajout Btrfs du second |
+| Video | `virtio` avec acceleration 3D, affichage Spice avec OpenGL (ou `virtio-vga-gl`) |
+| Reseau | NAT par defaut |
+
+Ce qui ne peut pas etre valide en VM : rendu NVIDIA, VRR/tearing/HDR, `x3d-mode` (pas de
+driver amd_x3d_vcache), liquidctl, Elgato (sauf passthrough USB), performances de jeu.
+Tout le reste l'est : archinstall avec le JSON, repos CachyOS, Limine + snapshots, Btrfs
+multi-disques, Hyprland + Caelestia, workspaces et autostart, SDDM/qylock, PipeWire, nxapi.
+
+Astuce : un snapshot de la VM juste apres archinstall permet de rejouer `install.sh 10`
+autant de fois que necessaire.
+
+## 6. Rollback
 
 `snap-pac` cree un snapshot avant et apres chaque transaction pacman et
 `limine-snapper-sync` les expose dans le menu Limine. En cas de boot casse apres

@@ -33,3 +33,6 @@ export STEAM_FORCE_DESKTOPUI_SCALING=2
 export _JAVA_AWT_WM_NONREPARENTING=1
 export EDITOR=micro
 export BROWSER=brave-origin
+
+# Surcharges locales non versionnees (ecrites par scripts/20-hyprland.sh, ex : mode VM)
+[ -r "${XDG_CONFIG_HOME:-$HOME/.config}/uwsm/env-local" ] && . "${XDG_CONFIG_HOME:-$HOME/.config}/uwsm/env-local"

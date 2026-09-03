@@ -18,8 +18,8 @@ load_config() {
   # shellcheck disable=SC1090
   source "$f"
   : "${DOTS_USER:?}" "${DOTS_HOSTNAME:?}" "${DOTS_TIMEZONE:?}" "${DOTS_LOCALE:?}" "${DOTS_KEYMAP:?}"
-  : "${CACHYOS_ARCH_LEVEL:=znver4}" "${DOTS_MONITOR:=HDMI-A-1}" "${DOTS_SDDM_THEME:=sddm-astronaut-theme}" "${NXAPI_VERSION:=1.6.1-next.254}"
-  export DOTS_USER DOTS_HOSTNAME DOTS_TIMEZONE DOTS_LOCALE DOTS_KEYMAP CACHYOS_ARCH_LEVEL DOTS_MONITOR DOTS_SDDM_THEME NXAPI_VERSION
+  : "${CACHYOS_ARCH_LEVEL:=znver4}" "${DOTS_MONITOR:=HDMI-A-1}" "${DOTS_SDDM_THEME:=sddm-astronaut-theme}" "${NXAPI_VERSION:=1.6.1-next.254}" "${DOTS_BTRFS_EXTRA_DEVICE:=}" "${DOTS_BTRFS_WIPE:=0}" "${DOTS_VM:=0}"
+  export DOTS_USER DOTS_HOSTNAME DOTS_TIMEZONE DOTS_LOCALE DOTS_KEYMAP CACHYOS_ARCH_LEVEL DOTS_MONITOR DOTS_SDDM_THEME NXAPI_VERSION DOTS_BTRFS_EXTRA_DEVICE DOTS_BTRFS_WIPE DOTS_VM
 }
 
 need_root()  { [[ $EUID -eq 0 ]] || die "Ce script doit etre lance en root (sudo)."; }
@@ -29,11 +29,15 @@ have()       { command -v "$1" >/dev/null 2>&1; }
 # Lit une liste pkgs/*.txt en ignorant commentaires et lignes vides.
 read_pkg_list() { grep -vE '^\s*(#|$)' "$1" | tr -d '\r'; }
 
+# Paquets sans objet dans une VM (DOTS_VM=1) : pilotes NVIDIA, capteurs de la carte mere
+VM_SKIP_REGEX='^(linux-cachyos-nvidia-open|nvidia-utils|lib32-nvidia-utils|nvidia-settings|libva-nvidia-driver|lib32-libva-nvidia-driver|nct6687d-dkms-git|nvtop)$'
+
 # Installe une liste de paquets (repos + AUR) via paru, sans reinstaller ce qui est deja present.
 install_pkgs() {
   local list="$1" missing=()
   have paru || die "paru est requis. Lancer d'abord scripts/10-base.sh."
   while read -r p; do
+    [[ "${DOTS_VM:-0}" == 1 && "$p" =~ $VM_SKIP_REGEX ]] && continue
     pacman -Qq "$p" >/dev/null 2>&1 || missing+=("$p")
   done < <(read_pkg_list "$list")
   if [[ ${#missing[@]} -eq 0 ]]; then ok "Rien a installer pour $(basename "$list")"; return; fi

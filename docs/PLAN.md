@@ -11,6 +11,8 @@ Decisions prises :
   pompe et les ventilateurs (decision utilisateur : le boitier est tres ventile), appliquees
   par un service systemd au boot. Pas de demon de courbes.
 - **Bureau** : workspaces fixes 1 Brave, 2 Discord, 3 Steam, 4 OBS, 5 YouTube Music, 6 Plezy, 7 jeux ; autostart des six premiers ; verrouillage a 15 min, jamais d'extinction d'ecran ni de veille ; themes SDDM astronaut ou qylock.
+- **Stockage** : Limine ; archinstall sur le SN850X 1 To, puis le SN850X 2 To ajoute au Btrfs racine par la phase 1 (data single, metadata raid1, ~3 To). Pas de dual boot.
+- **Test** : mode `DOTS_VM=1` pour rejouer l'installation dans QEMU/KVM sans materiel.
 - **Identite** : hostname `arch`, fuseau Europe/Luxembourg, clavier US, systeme en anglais
   avec formats europeens (en_GB) et monnaie EUR (de_LU).
 

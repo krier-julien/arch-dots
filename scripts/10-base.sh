@@ -26,6 +26,10 @@ install_pkgs "$REPO_DIR/pkgs/10-base.txt"
 
 # --- 3. Fichiers systeme (modprobe, mkinitcpio, scx, zram, sysctl, x3d-mode) ---------
 sudo rsync -a --backup --suffix=.bak --chown=root:root "$REPO_DIR/system/" /
+if [[ "$DOTS_VM" == 1 ]]; then
+  info "Mode VM : retrait des fichiers NVIDIA / nct6687"
+  sudo rm -f /etc/modprobe.d/nvidia.conf /etc/mkinitcpio.conf.d/nvidia.conf /etc/modules-load.d/nct6687.conf
+fi
 sudo chmod 0440 /etc/sudoers.d/10-x3d-mode
 sudo chmod 0755 /usr/local/bin/x3d-mode
 sudo visudo -cf /etc/sudoers.d/10-x3d-mode >/dev/null || die "sudoers.d/10-x3d-mode invalide"
@@ -51,7 +55,9 @@ sudo usermod -aG wheel,input,video,gamemode "$DOTS_USER" 2>/dev/null || sudo use
 # Le root= courant vient de /proc/cmdline (archinstall l'a ecrit dans limine.conf).
 ROOT_ARGS=$(tr ' ' '\n' < /proc/cmdline | grep -E '^(root=|rootflags=|rootfstype=|rw$|resume=)' | tr '\n' ' ' | sed 's/ $//')
 [[ -n "$ROOT_ARGS" ]] || die "Impossible de determiner root= depuis /proc/cmdline"
-sed "s|@@ROOT@@|$ROOT_ARGS|" "$REPO_DIR/templates/limine.default" | sudo tee /etc/default/limine >/dev/null
+LIMINE_TPL=$(sed "s|@@ROOT@@|$ROOT_ARGS|" "$REPO_DIR/templates/limine.default")
+[[ "$DOTS_VM" == 1 ]] && LIMINE_TPL=$(sed 's/ nvidia_drm.modeset=1 nvidia_drm.fbdev=1//' <<<"$LIMINE_TPL")
+printf '%s\n' "$LIMINE_TPL" | sudo tee /etc/default/limine >/dev/null
 ok "/etc/default/limine ecrit (root: $ROOT_ARGS)"
 
 # Un seul limine.conf, a /boot/limine.conf, avec notre entete ; limine-update ajoute les entrees.
@@ -67,6 +73,28 @@ sudo pacman -S --needed --noconfirm limine-mkinitcpio-hook limine-snapper-sync
 sudo mkinitcpio -P
 sudo limine-update
 grep -q '^/+' /boot/limine.conf || die "limine-update n'a genere aucune entree dans /boot/limine.conf"
+
+# --- 5b. Second NVMe dans le Btrfs racine (optionnel, DOTS_BTRFS_EXTRA_DEVICE) ---------
+if [[ -n "$DOTS_BTRFS_EXTRA_DEVICE" ]]; then
+  dev="$DOTS_BTRFS_EXTRA_DEVICE"
+  [[ -b "$dev" ]] || die "$dev n'est pas un peripherique bloc"
+  if sudo btrfs filesystem show / | grep -q "path $dev\b"; then
+    ok "$dev fait deja partie du Btrfs racine"
+  else
+    rootdev=$(findmnt -no SOURCE / | sed 's/\[.*//')
+    [[ "$dev" != "$rootdev" ]] || die "$dev est deja le disque racine"
+    if [[ -n "$(lsblk -no FSTYPE,PARTTYPE "$dev" | tr -d ' \n')" ]]; then
+      [[ "$DOTS_BTRFS_WIPE" == 1 ]] || die "$dev contient des donnees ($(lsblk -no FSTYPE "$dev" | head -1)). Mettre DOTS_BTRFS_WIPE=1 pour l'effacer."
+      warn "Effacement de $dev dans 10 s (Ctrl+C pour annuler)"; sleep 10
+      sudo wipefs -a "$dev"
+    fi
+    info "Ajout de $dev au Btrfs racine, puis equilibrage data=single / metadata=raid1"
+    sudo btrfs device add -f "$dev" /
+    sudo btrfs balance start -dconvert=single -mconvert=raid1 /
+    sudo mkinitcpio -P    # hook btrfs (system/etc/mkinitcpio.conf.d/btrfs.conf) : scan multi-disques au boot
+  fi
+  sudo btrfs filesystem show /; sudo btrfs filesystem df /
+fi
 
 # --- 6. snapper : config root (archinstall a pu la creer) ----------------------------
 if ! sudo snapper list-configs 2>/dev/null | grep -q '^root'; then
@@ -87,8 +115,9 @@ sudo btrfs quota disable / 2>/dev/null || true   # les qgroups coutent cher en p
 
 # --- 7. Services ----------------------------------------------------------------------
 sudo systemctl daemon-reload
-for u in NetworkManager bluetooth fstrim.timer systemd-timesyncd ananicy-cpp scx \
-         nvidia-suspend nvidia-hibernate nvidia-resume snapper-cleanup.timer limine-snapper-sync; do
+units=(NetworkManager bluetooth fstrim.timer systemd-timesyncd ananicy-cpp scx snapper-cleanup.timer limine-snapper-sync)
+[[ "$DOTS_VM" == 1 ]] || units+=(nvidia-suspend nvidia-hibernate nvidia-resume)
+for u in "${units[@]}"; do
   sudo systemctl enable --now "$u" 2>/dev/null || sudo systemctl enable "$u" || warn "unite $u absente"
 done
 sudo systemctl start systemd-zram-setup@zram0.service 2>/dev/null || true

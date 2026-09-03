@@ -16,6 +16,8 @@ Script : `scripts/10-base.sh` (`./install.sh 10`). Redemarrer ensuite.
 | Boot | Limine + `limine-entry-tool` (`/etc/default/limine`) + `limine-snapper-sync` | Parametres noyau versionnes, snapshots bootables dans le menu |
 | Snapshots | snapper root, `snap-pac` avant/apres pacman, 10 snapshots, pas de timeline | Rollback de mise a jour sans bruit |
 | Capteurs | `nct6687d-dkms-git` charge au boot | Puce NCT6687D des MSI X670E, sinon `sensors` est vide |
+| Stockage | `DOTS_BTRFS_EXTRA_DEVICE` ajoute un second NVMe au Btrfs racine (data single, metadata raid1), hook mkinitcpio `btrfs` | ~3 To en un seul systeme de fichiers, voir docs/00-install.md |
+| VM | `DOTS_VM=1` saute NVIDIA, nct6687 et les parametres noyau associes | Tester le repo dans QEMU/KVM |
 | Locale | `en_US.UTF-8` + `LC_TIME/PAPER/MEASUREMENT=en_GB`, `LC_MONETARY=de_LU` | Interface anglaise, formats europeens, euro |
 
 Parametres noyau (`templates/limine.default`) :

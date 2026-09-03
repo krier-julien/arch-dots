@@ -12,10 +12,19 @@ install_pkgs "$REPO_DIR/pkgs/20-hyprland.txt"
 stow_pkg caelestia
 stow_pkg uwsm
 # Valeurs locales lues par hypr-user.lua (non versionnees)
+vm_lua=false; [[ "$DOTS_VM" == 1 ]] && vm_lua=true
 cat > "$CFG/caelestia/local.lua" <<EOT
 -- genere par scripts/20-hyprland.sh depuis config.env
-return { monitor = "${DOTS_MONITOR}" }
+return { monitor = "${DOTS_MONITOR}", vm = ${vm_lua} }
 EOT
+if [[ "$DOTS_VM" == 1 ]]; then
+  cat > "$CFG/uwsm/env-local" <<'EOT'
+# Mode VM : pas de pile NVIDIA
+unset LIBVA_DRIVER_NAME __GLX_VENDOR_LIBRARY_NAME NVD_BACKEND
+EOT
+else
+  rm -f "$CFG/uwsm/env-local"
+fi
 
 # --- 3. Dotfiles Caelestia (hypr, foot, fish, btop, fastfetch, thunar, gtk/qt, auth...) --
 # Composants desactives : navigateur/discord/editeurs geres par nos phases 6, uwsm gere par

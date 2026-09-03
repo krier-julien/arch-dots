@@ -5,13 +5,14 @@
 local ok, localcfg = pcall(require, "local")
 if not ok or type(localcfg) ~= "table" then localcfg = {} end
 local monitor = localcfg.monitor or "HDMI-A-1"
+local vm      = localcfg.vm == true   -- test en machine virtuelle : pas de NVIDIA, ecran generique
 
 ---------------------------------------------------------------------------
 -- Ecran : 3840x2160@120, scale 2.0 (bureau 1920x1080 logique), VRR plein ecran
 ---------------------------------------------------------------------------
 hl.monitor({
-    output   = monitor,
-    mode     = "3840x2160@120",
+    output   = vm and "" or monitor,
+    mode     = vm and "preferred" or "3840x2160@120",
     position = "0x0",
     scale    = 2,
     vrr      = 2,          -- 0 off, 1 toujours, 2 plein ecran seulement, 3 plein ecran jeu/video
@@ -43,9 +44,11 @@ hl.config({
 -- Environnement NVIDIA + HiDPI pour les clients lances par Hyprland
 -- (uwsm reprend les memes valeurs dans ~/.config/uwsm/env pour toute la session)
 ---------------------------------------------------------------------------
-hl.env("LIBVA_DRIVER_NAME", "nvidia")
-hl.env("__GLX_VENDOR_LIBRARY_NAME", "nvidia")
-hl.env("NVD_BACKEND", "direct")
+if not vm then
+    hl.env("LIBVA_DRIVER_NAME", "nvidia")
+    hl.env("__GLX_VENDOR_LIBRARY_NAME", "nvidia")
+    hl.env("NVD_BACKEND", "direct")
+end
 hl.env("GDK_SCALE", "2")          -- apps GTK sous Xwayland (force_zero_scaling)
 hl.env("XCURSOR_SIZE", "24")
 hl.env("STEAM_FORCE_DESKTOPUI_SCALING", "2")  -- UI Steam a l'echelle (detail en Phase 3)
