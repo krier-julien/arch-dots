@@ -21,5 +21,11 @@ getent group gamemode >/dev/null && sudo usermod -aG gamemode "$USER"
 sudo -n /usr/local/bin/x3d-mode >/dev/null 2>&1 && ok "x3d-mode utilisable par gamemode" \
   || warn "x3d-mode : sudo sans mot de passe indisponible (phase 1) ou driver amd_x3d_vcache absent"
 
+# Manette Xbox (dongle) : xone remplace xpad pour ces peripheriques ; charger sans redemarrer
+if pacman -Qq xone-dkms-git >/dev/null 2>&1; then
+  sudo modprobe -r xpad 2>/dev/null || true
+  sudo modprobe xone_dongle 2>/dev/null && ok "xone charge (rebrancher le dongle si la manette ne s'associe pas)" || warn "xone non charge : verifier 'dkms status' et redemarrer"
+fi
+
 # Steam : premier lancement necessaire pour creer ~/.local/share/Steam ; rien a configurer par fichier.
 ok "Phase 3 terminee. Options de lancement Steam : voir docs/30-gaming.md"

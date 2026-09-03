@@ -73,6 +73,26 @@ ls -l /proc/$pid/fd | grep ntsync                   # une entree = ntsync actif
 # ou via MangoHUD : la ligne "winesync" affiche ntsync / fsync / esync
 ```
 
+## Manette Xbox avec le dongle Xbox Wireless
+
+Le dongle officiel n'est pas pris en charge par le noyau : la phase installe `xone-dkms-git`
+(driver, compile par DKMS pour les deux noyaux) et `xone-dongle-firmware` (firmware du dongle,
+telecharge chez Microsoft). xone remplace `xpad` pour ces peripheriques.
+
+Verifier :
+
+```bash
+dkms status                          # xone ... installed pour 7.x-cachyos et 7.x-arch1
+lsmod | grep -E 'xone|xpad'          # xone_dongle, xone_gip ; pas de xpad
+# brancher le dongle, appuyer sur le bouton d'association du dongle puis de la manette
+ls /dev/input/js* ; evtest           # la manette apparait
+```
+
+Steam > Parametres > Manette : activer *Prise en charge Xbox* ; le Steam Input s'occupe du
+reste. En jeu, les vibrations et la prise casque de la manette sont geres par xone.
+
+Mise a jour du noyau : DKMS recompile xone automatiquement (paquets headers installes).
+
 ## ProtonPlus
 
 `protonplus` (GUI GTK) installe et met a jour GE-Proton, Proton-CachyOS, Luxtorpeda, etc.

@@ -12,3 +12,7 @@ lib32-mesa
 lib32-gnutls
 lib32-libpulse
 lib32-pipewire-jack
+# Manette Xbox + dongle Xbox Wireless officiel : driver xone (DKMS, fork maintenu) + firmware du dongle
+# (telecharge chez Microsoft a l'installation). Les headers des deux noyaux sont installes en phase 1.
+xone-dkms-git
+xone-dongle-firmware
