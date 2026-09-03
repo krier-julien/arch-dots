@@ -145,7 +145,13 @@ Oui, avec `DOTS_VM=1` dans `config.env` : les pilotes NVIDIA, le module de capte
 parametres noyau NVIDIA et l'environnement `__GLX_VENDOR_LIBRARY_NAME` sont sautes, et
 Hyprland utilise l'ecran virtuel en mode `preferred`.
 
-VM recommandee (virt-manager / QEMU-KVM) :
+Sur un hote Arch, `scripts/vm/create-test-vm.sh <archlinux.iso>` cree la VM complete avec
+libvirt (prerequis listes en tete du script), puis `virt-viewer --attach arch-dots-test`.
+Le disque d'installation est `/dev/vda`, le second `/dev/vdb`. Dans le `config.env` de la VM :
+`DOTS_VM=1`, `DOTS_MONITOR="Virtual-1"`, `DOTS_BTRFS_EXTRA_DEVICE="/dev/vdb"`, et dans le JSON
+archinstall `device` = `/dev/vda`.
+
+Reglages equivalents si tu preferes virt-manager :
 
 | Reglage | Valeur |
 |---------|--------|
@@ -162,8 +168,12 @@ driver amd_x3d_vcache), liquidctl, Elgato (sauf passthrough USB), performances d
 Tout le reste l'est : archinstall avec le JSON, repos CachyOS, Limine + snapshots, Btrfs
 multi-disques, Hyprland + Caelestia, workspaces et autostart, SDDM/qylock, PipeWire, nxapi.
 
-Astuce : un snapshot de la VM juste apres archinstall permet de rejouer `install.sh 10`
-autant de fois que necessaire.
+Astuce : `virsh snapshot-create-as arch-dots-test post-archinstall` juste apres archinstall
+permet de rejouer `install.sh 10` autant de fois que necessaire
+(`virsh snapshot-revert arch-dots-test post-archinstall`).
+
+Le premier `pacman -Syu` et `caelestia install` telechargent plusieurs Go : prevoir 40 Go
+par disque et un cache pacman sur l'hote si tu rejoues souvent.
 
 ## 6. Rollback
 

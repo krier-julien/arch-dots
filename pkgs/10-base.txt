@@ -17,6 +17,7 @@ nvidia-utils
 lib32-nvidia-utils
 nvidia-settings
 egl-wayland
+mesa
 libva-nvidia-driver
 libva-utils
 vulkan-icd-loader
