@@ -34,7 +34,22 @@
         "useFahrenheit": false,
         "useTwelveHourClock": false,
         "gpuType": "Auto",
-        "smartScheme": true
+        "smartScheme": true,
+        "defaultPlayer": "YouTube Music",
+        "playerAliases": [
+            {
+                "from": "com.github.th_ch.youtube_music",
+                "to": "YouTube Music"
+            },
+            {
+                "from": "com.github.th-ch.youtube-music",
+                "to": "YouTube Music"
+            },
+            {
+                "from": "Pear Desktop",
+                "to": "YouTube Music"
+            }
+        ]
     },
     "session": {
         "commands": {
